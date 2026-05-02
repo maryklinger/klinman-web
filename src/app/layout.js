@@ -1,5 +1,19 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Cinzel, Montserrat } from 'next/font/google';
+
+export const cinzel = Cinzel({
+  subsets: ['latin'],
+  weight: ['700'],
+});
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+});
+
+
+{/* En el layout se importarán todas las fuentes globales, que usaré en la página. */}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +37,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
+      
     </html>
   );
 }
