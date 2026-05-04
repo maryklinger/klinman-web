@@ -12,12 +12,20 @@
   --font-mono: var(--font-geist-mono);
 }
 
-:root {
-  --background: #f8f5ef;
-  --foreground: #000000;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
 }
 
 body {
   background: #f8f5ef;
   color: black;
 }
+
+
+html {
+  scroll-behavior: smooth;
+}
+

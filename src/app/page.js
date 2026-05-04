@@ -3,105 +3,182 @@ export default function Home() {
     <main className="bg-white text-gray-800">
 
       {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-10 py-4 bg-[#f8f5ef] border-b border-[#c8a96a]">
+      <nav className="flex items-center justify-between px-10 py-6 bg-white sticky top-0 z-50">
 
-          {/* LOGO */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden">
-              <img 
-                src="/klinman_logo.png" 
-                alt="logo" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            <h1 className="text-xl font-bold tracking-widest text-[#c8a96a]">
-              KLINMAN
-
-            </h1>
+        <a href="#inicio" className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full overflow-hidden">
+            <img src="/klinman_logo.png" alt="logo" className="w-full h-full object-cover"/>
           </div>
+          <h1 className="text-xl font-bold tracking-widest text-[#c8a96a]">
+            KLINMAN
+          </h1>
+        </a>
 
-          
-  
-
-          {/* MENÚ */}
-          <ul className="hidden md:flex gap-8 text-sm font-semibold text-black">
-  
-          <li className="relative group cursor-pointer hover:text-[#c8a96a] transition-colors duration-300">
-            INICIO
-            <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#c8a96a] transition-all duration-300 group-hover:w-full"></span>
-          </li>
-
-          <li className="relative group cursor-pointer hover:text-[#c8a96a] transition-colors duration-300">
-            SERVICIOS
-            <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#c8a96a] transition-all duration-300 group-hover:w-full"></span>
-          </li>
-
-          <li className="relative group cursor-pointer hover:text-[#c8a96a] transition-colors duration-300">
-            SOBRE NOSOTROS
-            <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#c8a96a] transition-all duration-300 group-hover:w-full"></span>
-          </li>
-
-          <li className="relative group cursor-pointer hover:text-[#c8a96a] transition-colors duration-300">
-            VALORES
-            <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#c8a96a] transition-all duration-300 group-hover:w-full"></span>
-          </li>
-
+        <ul className="hidden md:flex gap-8 text-sm font-semibold text-black">
+          {[
+            { name: "INICIO", id: "inicio" },
+            { name: "SERVICIOS", id: "servicios" },
+            { name: "NOSOTROS", id: "nosotros" },
+            { name: "VALORES", id: "valores" },
+          ].map((item) => (
+            <li key={item.id}>
+              <a href={`#${item.id}`} className="relative group hover:text-[#c8a96a] transition">
+                {item.name}
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#c8a96a] transition-all duration-300 group-hover:w-full"></span>
+              </a>
+            </li>
+          ))}
         </ul>
 
-          {/* BOTÓN */}
-          <button className="bg-[#1f4d3a] text-white px-5 py-2 rounded shadow-md border border-[#c8a96a] hover:bg-[#16382b] transition">
+        <a href="#contacto">
+          <button className="bg-[#1f4d3a] text-white px-5 py-2 rounded border border-[#c8a96a] hover:bg-[#16382b] transition">
             CONTACTO
           </button>
+        </a>
 
       </nav>
 
-
       {/* HERO */}
-      <section className="h-[400px] bg-cover bg-center flex flex-col justify-center items-center text-white"
-           style={{ backgroundImage: "url('/limpieza.jpg')" }}>
-        <h2 className="text-3xl font-bold mb-4">
-          Servicio profesional de limpieza
-        </h2>
-        <p className="mb-4">Calidad y confianza para tu empresa</p>
-        <button className="bg-green-600 text-white px-6 py-2 rounded">
-          Solicitar asesoría
-        </button>
-      </section>
+      <section id="inicio" className="relative w-full h-[500px]">
+        <img src="/fondo_covert.jpg" className="absolute w-full h-full object-cover"/>
+        <div className="absolute w-full h-full bg-black/60"></div>
 
-      {/* SERVICIOS */}
-      <section className="p-10 text-center">
-        <h2 className="text-2xl font-bold mb-6">Servicios</h2>
-        <div className="grid grid-cols-3 gap-6">
-          <div className="p-5 shadow rounded">Limpieza oficinas</div>
-          <div className="p-5 shadow rounded">Limpieza industrial</div>
-          <div className="p-5 shadow rounded">Sanitización</div>
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
+          <h1 className="text-4xl md:text-6xl font-semibold">
+            TRES DÉCADAS ELEVANDO EL ESTÁNDAR DE LIMPIEZA
+          </h1>
+          <p className="mt-4 text-lg">
+            Cuidamos sus espacios como activos de valor.
+          </p>
+
+          <a href="#contacto">
+            <button className="mt-6 border border-white px-6 py-3 hover:bg-white hover:text-black transition">
+              SOLICITAR ASESORÍA
+            </button>
+          </a>
         </div>
       </section>
 
-      {/* FORMULARIO */}
-      <section className="p-10 bg-gray-100">
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Solicita tu asesoría
-        </h2>
+      {/* SERVICIOS */}
+      <section id="servicios" className="py-24 px-6 bg-[#f8f5ef]">
+        <div className="max-w-6xl mx-auto">
 
-        <form className="max-w-md mx-auto flex flex-col gap-4">
-          <input placeholder="Nombre" className="p-2 border rounded" />
-          <input placeholder="Empresa" className="p-2 border rounded" />
-          <input placeholder="Teléfono" className="p-2 border rounded" />
-          <input placeholder="Email" className="p-2 border rounded" />
+          <h2 className="text-3xl font-semibold mb-12">Nuestros Servicios</h2>
 
-          <select className="p-2 border rounded">
-            <option>Tipo de servicio</option>
-            <option>Oficinas</option>
-            <option>Industrial</option>
+          <div className="grid md:grid-cols-3 gap-8">
+
+            {[
+              {
+                titulo: "Limpieza Corporativa",
+                desc: "Espacios impecables con estándares profesionales.",
+                img: "/servicio1.jpg"
+              },
+              {
+                titulo: "Mantenimiento Técnico",
+                desc: "Tratamientos especializados para superficies.",
+                img: "/servicio2.jpg"
+              },
+              {
+                titulo: "Servicios Especializados",
+                desc: "Soluciones a medida para cada cliente.",
+                img: "/servicio3.jpg"
+              }
+            ].map((s, i) => (
+
+              <div key={i} className="group border rounded-xl overflow-hidden bg-white hover:shadow-lg transition">
+                <img src={s.img} className="w-full h-[250px] object-cover group-hover:scale-105 transition duration-500"/>
+
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold mb-2">{s.titulo}</h3>
+                  <p className="text-gray-600 text-sm mb-6">{s.desc}</p>
+
+                  <a href="#contacto">
+                    <button className="text-sm border px-4 py-2 rounded-full hover:bg-black hover:text-white transition">
+                      Solicitar →
+                    </button>
+                  </a>
+                </div>
+              </div>
+
+            ))}
+
+          </div>
+        </div>
+      </section>
+
+      {/* NOSOTROS */}
+      <section id="nosotros" className="py-24 px-6 text-center">
+        <h2 className="text-3xl font-semibold mb-6">Nosotros</h2>
+        <p className="max-w-2xl mx-auto text-gray-600">
+          Klinman es su socio estratégico en limpieza técnica y mantenimiento corporativo.
+        </p>
+      </section>
+
+      {/* VALORES */}
+      <section id="valores" className="py-24 px-6 bg-[#f9f9f9] text-center">
+        <h2 className="text-3xl font-semibold mb-12">Valores</h2>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          {["EXPERIENCIA","COMPROMISO","SINERGIA","RESPETO"].map((v,i)=>(
+            <div key={i} className="p-6 rounded-xl hover:bg-white transition">
+              {v}
+            </div>
+          ))}
+        </div>
+      </section>
+
+       {/* FORMULARIO */}
+      <section className="py-24 px-6 bg-white">
+        <div className="max-w-4xl mx-auto">
+
+          <h2 className="text-3xl font-semibold mb-10 text-center">
+            Formulario de Contacto
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <input placeholder="Nombre" className="border-b p-2 outline-none" />
+            <input placeholder="Empresa" className="border-b p-2 outline-none" />
+            <input placeholder="Teléfono" className="border-b p-2 outline-none" />
+            <input placeholder="Email" className="border-b p-2 outline-none" />
+
+          </div>
+
+          <select className="w-full mt-6 border-b p-2 outline-none">
+            <option>Tipo de Interés</option>
+            <option>Limpieza</option>
+            <option>Mantenimiento</option>
           </select>
 
-          <button className="bg-green-600 text-white p-2 rounded">
-            Enviar
+          <button className="mt-8 border px-6 py-3 rounded-full hover:bg-black hover:text-white transition">
+            SOLICITAR CONTACTO
           </button>
-        </form>
+
+        </div>
       </section>
+
+      {/* FOOTER */}
+      <footer className="bg-[#f8f5ef] border-t py-8 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+
+          <div className="flex items-center gap-3">
+            <img src="/klinman_logo.png" className="w-10"/>
+            <span className="text-xl font-semibold text-[#c8a96a]">KLINMAN</span>
+          </div>
+
+          <div className="text-sm text-gray-700 text-center">
+            Morandé 776, Santiago
+          </div>
+
+          <div className="flex gap-4">
+            <a href="#">LinkedIn</a>
+            <a href="#">Facebook</a>
+            <a href="mailto:correo@gmail.com">Correo</a>
+            <a href="https://wa.me/56900000000">WhatsApp</a>
+          </div>
+
+        </div>
+      </footer>
 
     </main>
   );
