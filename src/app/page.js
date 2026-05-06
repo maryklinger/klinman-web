@@ -1,4 +1,50 @@
+'use client';
+
 export default function Home() {
+
+      const handleSubmit = async (e) => {
+      e.preventDefault();
+
+      const form = e.target;
+
+      const data = {
+        nombre: form.nombre.value,
+        empresa: form.empresa.value,
+        telefono: form.telefono.value,
+        email: form.email.value,
+        servicio: form.servicio.value,
+        mensaje: form.mensaje.value || ""
+      };
+
+      try {
+        const res = await fetch('/api/contacto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert("Solicitud enviada correctamente 🎉");
+          form.reset();
+        } else {
+          alert("Hubo un error ❌");
+          console.error(result.error);
+        }
+
+      } catch (error) {
+        console.error(error);
+        alert("Error de conexión con el servidor ❌");
+      }
+    };
+
+
+
+
+
+
+
   return (
     <main className="bg-white text-gray-800">
 
@@ -71,17 +117,17 @@ export default function Home() {
               {
                 titulo: "Limpieza Corporativa",
                 desc: "Espacios impecables con estándares profesionales.",
-                img: "/servicio1.jpg"
+                img: "/limpieza_corporativa.jpg"
               },
               {
                 titulo: "Mantenimiento Técnico",
                 desc: "Tratamientos especializados para superficies.",
-                img: "/servicio2.jpg"
+                img: "/mantenimiento_Tecnico.jpg"
               },
               {
                 titulo: "Servicios Especializados",
                 desc: "Soluciones a medida para cada cliente.",
-                img: "/servicio3.jpg"
+                img: "/servicios_especializados.jpg"
               }
             ].map((s, i) => (
 
@@ -127,7 +173,8 @@ export default function Home() {
         </div>
       </section>
 
-       {/* FORMULARIO */}
+   
+      {/* FORMULARIO */}
       <section className="py-24 px-6 bg-white">
         <div className="max-w-4xl mx-auto">
 
@@ -135,24 +182,66 @@ export default function Home() {
             Formulario de Contacto
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit}>
 
-            <input placeholder="Nombre" className="border-b p-2 outline-none" />
-            <input placeholder="Empresa" className="border-b p-2 outline-none" />
-            <input placeholder="Teléfono" className="border-b p-2 outline-none" />
-            <input placeholder="Email" className="border-b p-2 outline-none" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          </div>
+              <input 
+                name="nombre"
+                placeholder="Nombre" 
+                className="border-b p-2 outline-none" 
+                required
+              />
 
-          <select className="w-full mt-6 border-b p-2 outline-none">
-            <option>Tipo de Interés</option>
-            <option>Limpieza</option>
-            <option>Mantenimiento</option>
-          </select>
+              <input 
+                name="empresa"
+                placeholder="Empresa" 
+                className="border-b p-2 outline-none" 
+                required
+              />
 
-          <button className="mt-8 border px-6 py-3 rounded-full hover:bg-black hover:text-white transition">
-            SOLICITAR CONTACTO
-          </button>
+              <input 
+                name="telefono"
+                placeholder="Teléfono" 
+                className="border-b p-2 outline-none" 
+                required
+              />
+
+              <input 
+                name="email"
+                type="email"
+                placeholder="Email" 
+                className="border-b p-2 outline-none" 
+                required
+              />
+
+            </div>
+
+            <select 
+              name="servicio"
+              className="w-full mt-6 border-b p-2 outline-none"
+              required
+            >
+              <option value="">Tipo de Interés</option>
+              <option value="Limpieza">Limpieza</option>
+              <option value="Mantenimiento">Mantenimiento</option>
+            </select>
+
+            <textarea
+              name="mensaje"
+              placeholder="Mensaje (opcional)"
+              className="w-full mt-6 border p-2 rounded-lg outline-none"
+              rows={4}
+            />
+
+            <button 
+              type="submit"
+              className="mt-8 border px-6 py-3 rounded-full hover:bg-black hover:text-white transition"
+            >
+              SOLICITAR CONTACTO
+            </button>
+
+          </form>
 
         </div>
       </section>
