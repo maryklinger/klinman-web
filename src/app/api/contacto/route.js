@@ -16,18 +16,47 @@ export async function POST(req) {
 
     const pool = await sql.connect(config);
 
-    await pool.request()
-      .input('nombre', sql.NVarChar, body.nombre)
-      .input('empresa', sql.NVarChar, body.empresa)
-      .input('telefono', sql.NVarChar, body.telefono)
-      .input('email', sql.NVarChar, body.email)
-      .input('servicio', sql.NVarChar, body.servicio)
-      .input('mensaje', sql.NVarChar, body.mensaje)
-      .query(`
-        INSERT INTO solicitudes 
-        (nombre, empresa, telefono, email, servicio, mensaje)
-        VALUES (@nombre, @empresa, @telefono, @email, @servicio, @mensaje)
-      `);
+    const countResult = await pool
+  .request()
+  .query(`
+    SELECT COUNT(*) as total
+    FROM solicitudes
+  `);
+
+const total = countResult.recordset[0].total + 1;
+
+const ticket = `KLIN-${String(total).padStart(4, "0")}`;
+
+await pool.request()
+  .input('ticket', sql.VarChar, ticket)
+  .input('nombre', sql.NVarChar, body.nombre)
+  .input('empresa', sql.NVarChar, body.empresa)
+  .input('telefono', sql.NVarChar, body.telefono)
+  .input('email', sql.NVarChar, body.email)
+  .input('servicio', sql.NVarChar, body.servicio)
+  .input('mensaje', sql.NVarChar, body.mensaje)
+  .query(`
+    INSERT INTO solicitudes 
+    (
+      ticket,
+      nombre,
+      empresa,
+      telefono,
+      email,
+      servicio,
+      mensaje
+    )
+    VALUES
+    (
+      @ticket,
+      @nombre,
+      @empresa,
+      @telefono,
+      @email,
+      @servicio,
+      @mensaje
+    )
+  `);
 
     return Response.json({ success: true });
 

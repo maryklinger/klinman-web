@@ -1,4 +1,5 @@
 'use client';
+import toast from 'react-hot-toast';
 
 export default function Home() {
 
@@ -26,16 +27,17 @@ export default function Home() {
         const result = await res.json();
 
         if (result.success) {
-          alert("Solicitud enviada correctamente 🎉");
+          toast.success("Mensaje enviado con éxito");
           form.reset();
         } else {
-          alert("Hubo un error ❌");
+          toast.error("Hubo un error");
           console.error(result.error);
         }
 
       } catch (error) {
         console.error(error);
-        alert("Error de conexión con el servidor ❌");
+        toast.error("Error de conexión con el servidor");
+       
       }
     };
 
