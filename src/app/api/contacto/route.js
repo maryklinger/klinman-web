@@ -21,6 +21,7 @@ export async function POST(req) {
   .query(`
     SELECT COUNT(*) as total
     FROM solicitudes
+  
   `);
 
 const total = countResult.recordset[0].total + 1;

@@ -12,11 +12,11 @@ const config = {
   },
 };
 
-export async function PATCH(req, context) {
+export async function PATCH(req, { params }) {
 
   try {
 
-    const id = Number(context.params.id);
+    const { id } = params;
 
     const body = await req.json();
 

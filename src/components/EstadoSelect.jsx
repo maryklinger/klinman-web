@@ -1,46 +1,65 @@
 "use client";
 
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+
+import {
+  actualizarEstado
+} from "../app/admin/actions";
 
 export default function EstadoSelect({
   solicitudId,
-  estadoActual,
+  estadoActual
 }) {
 
   const router = useRouter();
 
-  async function cambiarEstado(nuevoEstado) {
+  async function cambiarEstado(e) {
+
+    const nuevoEstado = e.target.value;
 
     try {
 
-      console.log("Actualizando:", solicitudId);
-
-      const res = await fetch(
-        `/api/solicitudes/${solicitudId}`,
-        {
-          method: "PATCH",
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            estado: nuevoEstado,
-          }),
-        }
+      const result = await actualizarEstado(
+        solicitudId,
+        nuevoEstado
       );
 
-      const data = await res.json();
+      if (result.success) {
 
-      console.log(data);
-
-      if (data.success) {
+        toast.success(
+          "Estado actualizado correctamente",
+          {
+            style: {
+              border: "1px solid #166534",
+              padding: "16px",
+              color: "#166534",
+            },
+            iconTheme: {
+              primary: "#166534",
+              secondary: "#ffffff",
+            },
+          }
+        );
 
         router.refresh();
 
       } else {
 
-        alert("Error al actualizar");
+        toast.error(
+          result.error || "No se pudo actualizar el estado",
+          {
+            style: {
+              border: "1px solid #991b1b",
+              padding: "16px",
+              color: "#991b1b",
+            },
+            iconTheme: {
+              primary: "#991b1b",
+              secondary: "#ffffff",
+            },
+          }
+        );
 
       }
 
@@ -48,35 +67,53 @@ export default function EstadoSelect({
 
       console.error(error);
 
-      alert("Error del servidor");
+      toast.error(
+        "Error de conexión con el servidor",
+        {
+          style: {
+            border: "1px solid #991b1b",
+            padding: "16px",
+            color: "#991b1b",
+          },
+          iconTheme: {
+            primary: "#991b1b",
+            secondary: "#ffffff",
+          },
+        }
+      );
 
     }
+
   }
 
   return (
 
     <select
-      value={estadoActual}
-      onChange={(e) =>
-        cambiarEstado(e.target.value)
-      }
-        className="border border-[#d8d2c7] bg-white rounded-xl px-3 py-2 text-sm outline-none"
-        >
+      defaultValue={estadoActual}
+      onChange={cambiarEstado}
+      className="
+        border
+        border-[#d8d2c7]
+        bg-white
+        rounded-xl
+        px-3
+        py-2
+        text-sm
+        outline-none
+        focus:border-[#c8a96a]
+      "
+    >
 
-      <option value="Pendiente">
+      <option value="pendiente">
         Pendiente
       </option>
 
-      <option value="En revisión">
+      <option value="en revisión">
         En revisión
       </option>
 
-      <option value="Finalizado">
+      <option value="finalizado">
         Finalizado
-      </option>
-
-      <option value="Cancelado">
-        Cancelado
       </option>
 
     </select>

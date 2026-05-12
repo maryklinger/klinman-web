@@ -12,31 +12,31 @@ const config = {
   },
 };
 
-export async function PATCH(req, context) {
+export async function GET() {
 
   try {
 
-    const id = Number(context.params.id);
-
-    const body = await req.json();
-
-    const { estado } = body;
-
     const pool = await sql.connect(config);
 
-    await pool
+    const result = await pool
       .request()
-      .input("id", sql.Int, id)
-      .input("estado", sql.VarChar, estado)
       .query(`
-        UPDATE solicitudes
-        SET estado = @estado
-        WHERE id = @id
+        SELECT
+          id,
+          ticket,
+          nombre,
+          empresa,
+          telefono,
+          email,
+          servicio,
+          mensaje,
+          estado,
+          fecha_creacion
+        FROM solicitudes
+        ORDER BY fecha_creacion DESC
       `);
 
-    return Response.json({
-      success: true,
-    });
+    return Response.json(result.recordset);
 
   } catch (error) {
 
@@ -44,7 +44,7 @@ export async function PATCH(req, context) {
 
     return Response.json(
       {
-        error: "Error al actualizar estado",
+        error: "Error al obtener solicitudes",
       },
       {
         status: 500,

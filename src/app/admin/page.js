@@ -1,9 +1,10 @@
+export const dynamic = "force-dynamic";
+
 import sql from "mssql";
-import AdminSidebar from "@/components/AdminSidebar";
-import StatusBadge from "@/components/StatusBadge";
-import EstadoSelect from "@/components/EstadoSelect";
 
-
+import AdminSidebar from "../../components/AdminSidebar";
+import StatusBadge from "../../components/StatusBadge";
+import EstadoSelect from "../../components/EstadoSelect";
 async function getSolicitudes() {
 
   const config = {
@@ -45,6 +46,7 @@ async function getSolicitudes() {
   } catch (error) {
 
     console.error(error);
+
     return [];
 
   }
@@ -53,6 +55,23 @@ async function getSolicitudes() {
 export default async function AdminPage() {
 
   const solicitudes = await getSolicitudes();
+  
+
+  // CONTADORES
+  const pendientes = solicitudes.filter(
+    (s) =>
+      s.estado?.trim().toLowerCase() === "pendiente"
+  ).length;
+
+  const revision = solicitudes.filter(
+    (s) =>
+      s.estado?.trim().toLowerCase() === "en revisión"
+  ).length;
+
+  const finalizadas = solicitudes.filter(
+    (s) =>
+      s.estado?.trim().toLowerCase() === "finalizado"
+  ).length;
 
   return (
 
@@ -71,18 +90,22 @@ export default async function AdminPage() {
 
             <div>
 
-              <h1 className="
-                text-4xl
-                font-bold
-                text-[#1f4d3a]
-              ">
+              <h1
+                className="
+                  text-4xl
+                  font-bold
+                  text-[#1f4d3a]
+                "
+              >
                 Panel Administrativo
               </h1>
 
-              <p className="
-                text-gray-600
-                mt-2
-              ">
+              <p
+                className="
+                  text-gray-600
+                  mt-2
+                "
+              >
                 Gestión de solicitudes Klinman
               </p>
 
@@ -91,121 +114,123 @@ export default async function AdminPage() {
           </div>
 
           {/* CARDS */}
-          <div className="
-            grid
-            grid-cols-1
-            md:grid-cols-3
-            gap-6
-            mb-10
-          ">
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-3
+              gap-6
+              mb-10
+            "
+          >
 
             {/* PENDIENTES */}
-            <div className="
-              bg-white
-              rounded-3xl
-              p-7
-              shadow-sm
-              border
-              border-[#ece7dc]
-              hover:shadow-md
-              transition
-            ">
+            <div
+              className="
+                bg-white
+                rounded-3xl
+                p-7
+                shadow-sm
+                border
+                border-[#ece7dc]
+                hover:shadow-md
+                transition
+              "
+            >
 
-              <p className="
-                text-sm
-                text-[#8a6a2f]
-                font-medium
-              ">
+              <p
+                className="
+                  text-sm
+                  text-[#8a6a2f]
+                  font-medium
+                "
+              >
                 Solicitudes Pendientes
               </p>
 
-              <h2 className="
-                text-5xl
-                font-bold
-                text-[#c8a96a]
-                mt-3
-              ">
-
-                {
-                  solicitudes.filter(
-                    s => s.estado?.trim().toLowerCase() === "pendiente"
-                  ).length
-                }
-
+              <h2
+                className="
+                  text-5xl
+                  font-bold
+                  text-[#c8a96a]
+                  mt-3
+                "
+              >
+                {pendientes}
               </h2>
 
             </div>
 
             {/* EN REVISIÓN */}
-            <div className="
-              bg-white
-              rounded-3xl
-              p-7
-              shadow-sm
-              border
-              border-[#ece7dc]
-              hover:shadow-md
-              transition
-            ">
+            <div
+              className="
+                bg-white
+                rounded-3xl
+                p-7
+                shadow-sm
+                border
+                border-[#ece7dc]
+                hover:shadow-md
+                transition
+              "
+            >
 
-              <p className="
-                text-sm
-                text-[#1f4d3a]
-                font-medium
-              ">
+              <p
+                className="
+                  text-sm
+                  text-[#1f4d3a]
+                  font-medium
+                "
+              >
                 En Revisión
               </p>
 
-              <h2 className="
-                text-5xl
-                font-bold
-                text-[#1f4d3a]
-                mt-3
-              ">
-
-                {
-                  solicitudes.filter(
-                   s => s.estado?.trim().toLowerCase() === "en revisión"
-                  ).length
-                }
-
+              <h2
+                className="
+                  text-5xl
+                  font-bold
+                  text-[#1f4d3a]
+                  mt-3
+                "
+              >
+                {revision}
               </h2>
 
             </div>
 
             {/* FINALIZADAS */}
-            <div className="
-              bg-white
-              rounded-3xl
-              p-7
-              shadow-sm
-              border
-              border-[#ece7dc]
-              hover:shadow-md
-              transition
-            ">
+            <div
+              className="
+                bg-white
+                rounded-3xl
+                p-7
+                shadow-sm
+                border
+                border-[#ece7dc]
+                hover:shadow-md
+                transition
+              "
+            >
 
-              <p className="
-                text-sm
-                text-[#1f4d3a]
-                font-medium
-              ">
+              <p
+                className="
+                  text-sm
+                  text-[#1f4d3a]
+                  font-medium
+                "
+              >
                 Finalizadas
               </p>
 
-              <h2 className="
-                text-5xl
-                font-bold
-                text-[#1f4d3a]
-                mt-3
-              ">
-
-                {
-                  solicitudes.filter(
-                   s => s.estado?.trim().toLowerCase() === "finalizado"
-                  ).length
-                }
-
+              <h2
+                className="
+                  text-5xl
+                  font-bold
+                  text-[#1f4d3a]
+                  mt-3
+                "
+              >
+                {finalizadas}
               </h2>
 
             </div>
@@ -213,41 +238,49 @@ export default async function AdminPage() {
           </div>
 
           {/* TABLA */}
-          <div className="
-            bg-white
-            rounded-3xl
-            shadow-sm
-            border
-            border-[#ece7dc]
-            overflow-hidden
-          ">
+          <div
+            className="
+              bg-white
+              rounded-3xl
+              shadow-sm
+              border
+              border-[#ece7dc]
+              overflow-hidden
+            "
+          >
 
             {/* HEADER TABLA */}
-            <div className="
-              px-8
-              py-6
-              border-b
-              border-[#ece7dc]
-              flex
-              items-center
-              justify-between
-            ">
+            <div
+              className="
+                px-8
+                py-6
+                border-b
+                border-[#ece7dc]
+                flex
+                items-center
+                justify-between
+              "
+            >
 
               <div>
 
-                <h2 className="
-                  text-2xl
-                  font-semibold
-                  text-[#1f4d3a]
-                ">
+                <h2
+                  className="
+                    text-2xl
+                    font-semibold
+                    text-[#1f4d3a]
+                  "
+                >
                   Solicitudes
                 </h2>
 
-                <p className="
-                  text-sm
-                  text-gray-500
-                  mt-1
-                ">
+                <p
+                  className="
+                    text-sm
+                    text-gray-500
+                    mt-1
+                  "
+                >
                   Gestión operacional Klinman
                 </p>
 
@@ -256,16 +289,30 @@ export default async function AdminPage() {
             </div>
 
             {/* TABLA */}
-            <div className="overflow-x-auto">
+            <div
+              className="
+                overflow-x-auto
+                overflow-y-auto
+                max-h-[600px]
+              "
+            >
 
               <table className="w-full">
 
-                <thead className="bg-[#1f4d3a] text-white">
+                <thead
+                  className="
+                    bg-[#1f4d3a]
+                    text-white
+                    sticky
+                    top-0
+                    z-10
+                  "
+                >
 
                   <tr>
 
                     <th className="text-left p-5 font-medium">
-                    Ticket
+                      Ticket
                     </th>
 
                     <th className="text-left p-5 font-medium">
@@ -288,6 +335,10 @@ export default async function AdminPage() {
                       Fecha
                     </th>
 
+                    <th className="text-left p-5 font-medium">
+                      Acciones
+                    </th>
+
                   </tr>
 
                 </thead>
@@ -306,40 +357,104 @@ export default async function AdminPage() {
                       "
                     >
 
-                       <td className="p-5 font-semibold text-[#c8a96a]">
+                      {/* TICKET */}
+                      <td
+                        className="
+                          p-5
+                          font-semibold
+                          text-[#c8a96a]
+                        "
+                      >
                         {s.ticket}
-                       </td>
+                      </td>
 
-                      <td className="p-5 font-medium text-gray-800">
+                      {/* CLIENTE */}
+                      <td
+                        className="
+                          p-5
+                          font-medium
+                          text-gray-800
+                        "
+                      >
                         {s.nombre}
                       </td>
 
-                      <td className="p-5 text-gray-600">
+                      {/* EMPRESA */}
+                      <td
+                        className="
+                          p-5
+                          text-gray-600
+                        "
+                      >
                         {s.empresa}
                       </td>
 
-                      <td className="p-5 text-gray-600">
+                      {/* SERVICIO */}
+                      <td
+                        className="
+                          p-5
+                          text-gray-600
+                        "
+                      >
                         {s.servicio}
                       </td>
 
+                      {/* ESTADO */}
                       <td className="p-5">
-                        <div className="flex items-center gap-3">
 
-                            <StatusBadge estado={s.estado} />
+                        <div
+                          className="
+                            flex
+                            items-center
+                            gap-3
+                          "
+                        >
 
-                            <EstadoSelect
-                                solicitudId={s.id}
-                                estadoActual={s.estado}
-                            />
+                          <StatusBadge estado={s.estado} />
+
+                          <EstadoSelect
+                            solicitudId={s.id}
+                            estadoActual={s.estado}
+                          />
 
                         </div>
+
                       </td>
 
-                      <td className="p-5 text-gray-500">
+                      {/* FECHA */}
+                      <td
+                        className="
+                          p-5
+                          text-gray-500
+                        "
+                      >
 
-                        {new Date(
-                          s.fecha_creacion
-                        ).toLocaleDateString()}
+                        {
+                          new Date(
+                            s.fecha_creacion
+                          ).toLocaleDateString("es-CL")
+                        }
+
+                      </td>
+
+                      {/* ACCIONES */}
+                      <td className="p-5">
+
+                        <a
+                          href={`/admin/solicitudes/${s.id}`}
+                          className="
+                            bg-[#1f4d3a]
+                            text-white
+                            px-4
+                            py-2
+                            rounded-xl
+                            text-sm
+                            hover:bg-[#16382b]
+                            transition
+                          "
+                        >
+                          Ver detalle
+                        </a>
 
                       </td>
 
