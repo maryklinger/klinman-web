@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import AdminSidebar from "@/components/AdminSidebar";
-import StatusBadge from "@/components/StatusBadge";
-import EstadoSelect from "@/components/EstadoSelect";
-
+// Forzamos la extensión para que Turbopack encuentre los archivos reales
+import AdminSidebar from "@/components/AdminSidebar.jsx";
+import StatusBadge from "@/components/StatusBadge.jsx";
+import EstadoSelect from "@/components/EstadoSelect.jsx";
 export default function AdminPage() {
 
   const [solicitudes, setSolicitudes] = useState([]);

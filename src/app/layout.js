@@ -21,22 +21,23 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-
         {children}
 
+        {/* Único Toaster centralizado */}
         <Toaster
           position="top-right"
           toastOptions={{
-            duration: 4000,
+            duration: 5000,
             style: {
-              background: "#16a34a",
+              background: "#1f4d3a", // El verde oscuro de Klinman
               color: "#fff",
               padding: "16px",
-              borderRadius: "10px",
+              borderRadius: "14px",
+              border: "1px solid #c8a96a", // El toque dorado
               fontSize: "14px",
             },
           }}

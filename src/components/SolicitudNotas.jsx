@@ -21,6 +21,7 @@ export default function SolicitudNotas({
 
       setLoading(true);
 
+      // Importante: Tu base de datos usa nvarchar(max) para notas
       const res = await fetch(
         `/api/solicitudes/${solicitudId}`,
         {

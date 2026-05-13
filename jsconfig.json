@@ -1,7 +1,19 @@
 {
   "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
     "paths": {
       "@/*": ["./src/*"]
-    }
-  }
+    },
+    "checkJs": true,
+    "allowJs": true,
+    "strict": false
+  },
+  "include": [
+    "src/**/*",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
 }

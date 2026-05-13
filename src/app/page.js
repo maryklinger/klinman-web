@@ -7,6 +7,8 @@ export default function Home() {
   const handleSubmit = async (e) => {
 
     e.preventDefault();
+    // Agrega esto para eliminar cualquier toast que ya esté en pantalla
+  toast.dismiss();
 
     const form = e.target;
 
@@ -467,15 +469,20 @@ export default function Home() {
             >
 
               <option value="">
-                Tipo de Interés
+                Tipo de Servicio
               </option>
 
-              <option value="Limpieza">
-                Limpieza
+              <option value="Limpieza Corporativa">
+                Limpieza Corporativa
               </option>
 
-              <option value="Mantenimiento">
-                Mantenimiento
+              <option value="Limpieza Residencial">
+                Limpieza Residencial
+              </option>
+
+
+              <option value="Mantenimiento de Áreas Comunes">
+                Mantenimiento de Áreas Comunes
               </option>
 
             </select>
