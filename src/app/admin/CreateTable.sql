@@ -26,6 +26,13 @@ SET servicio = 'Mantenimiento de Áreas Comunes'
 WHERE servicio = 'Mantenimiento';
 
 
+
+UPDATE solicitudes
+SET empresa = 'Senderos'
+WHERE empresa = 'Daem';
+
+
+
 SELECT * FROM solicitudes;
 
 
