@@ -16,10 +16,14 @@ CREATE TABLE solicitudes (
 
 
 
--- Para actualizar los registros erróneos.
+-- Para actualizar los registros erróneos.s
 UPDATE solicitudes
 SET servicio = 'Limpieza Corporativa'
 WHERE servicio = 'Limpieza';
+
+UPDATE solicitudes
+SET servicio = 'Mantenimiento de Áreas Comunes'
+WHERE servicio = 'Mantenimiento';
 
 
 SELECT * FROM solicitudes;

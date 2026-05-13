@@ -8,21 +8,17 @@ const config = {
   password: process.env.DB_PASSWORD || "",
   server: process.env.DB_SERVER || "",
   database: process.env.DB_DATABASE || "",
-
   options: {
     encrypt: true,
     trustServerCertificate: true,
   },
 };
 
+// --- FUNCIÓN EXISTENTE ---
 export async function actualizarEstado(id, nuevoEstado) {
-
   let pool;
-
   try {
-
     pool = await sql.connect(config);
-
     await pool
       .request()
       .input("id", sql.Int, id)
@@ -35,25 +31,39 @@ export async function actualizarEstado(id, nuevoEstado) {
 
     revalidatePath("/admin");
     revalidatePath(`/admin/solicitudes/${id}`);
-
-    return {
-      success: true,
-    };
-
+    return { success: true };
   } catch (error) {
-
     console.error(error);
-
-    return {
-      success: false,
-      error: error.message,
-    };
-
+    return { success: false, error: error.message };
   } finally {
+    if (pool) await pool.close();
+  }
+}
 
-    if (pool) {
-      await pool.close();
-    }
+// --- NUEVA FUNCIÓN PARA PRIORIDAD ---
+export async function actualizarPrioridad(id, nuevaPrioridad) {
+  let pool;
+  try {
+    pool = await sql.connect(config);
+    await pool
+      .request()
+      .input("id", sql.Int, id)
+      .input("prioridad", sql.NVarChar, nuevaPrioridad)
+      .query(`
+        UPDATE solicitudes
+        SET prioridad = @prioridad
+        WHERE id = @id
+      `);
 
+    // Revalidamos las rutas para que los cambios se vean reflejados de inmediato
+    revalidatePath("/admin");
+    revalidatePath(`/admin/solicitudes/${id}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: error.message };
+  } finally {
+    if (pool) await pool.close();
   }
 }

@@ -33,7 +33,7 @@ export default function EstadoSelect({
             style: {
               border: "1px solid #166534",
               padding: "16px",
-              color: "#166534",
+              color: "#ffffff",
             },
             iconTheme: {
               primary: "#166534",

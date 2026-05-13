@@ -4,11 +4,28 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import StatusBadge from "../../components/StatusBadge.jsx";
 import EstadoSelect from "../../components/EstadoSelect.jsx";
+import PrioridadSelect from "../../components/PrioridadSelect.jsx"; 
+
+// Badge de prioridad: Mantiene el tamaño 10px y la estética Klinman
+function PriorityBadge({ prioridad }) {
+  const styles = {
+    Alta: "bg-[#991b1b] text-white", 
+    Media: "bg-[#c8a96a] text-white",
+    Baja: "bg-[#4a5568] text-white",
+  };
+
+  return (
+    <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase shadow-sm ${styles[prioridad] || "bg-gray-500 text-white"}`}>
+      {prioridad}
+    </span>
+  );
+}
 
 export default function AdminTableClient({ solicitudesIniciales }) {
   const [busqueda, setBusqueda] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState("todos");
   const [servicioFiltro, setServicioFiltro] = useState("todos");
+  const [prioridadFiltro, setPrioridadFiltro] = useState("todos");
   
   const [fechaDesde, setFechaDesde] = useState("");
   const [fechaHasta, setFechaHasta] = useState("");
@@ -18,7 +35,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [busqueda, estadoFiltro, servicioFiltro, fechaDesde, fechaHasta]);
+  }, [busqueda, estadoFiltro, servicioFiltro, prioridadFiltro, fechaDesde, fechaHasta]);
 
   // 1. Lógica de filtrado combinada
   const solicitudesFiltradas = solicitudesIniciales.filter((s) => {
@@ -34,6 +51,10 @@ export default function AdminTableClient({ solicitudesIniciales }) {
       servicioFiltro === "todos" || 
       s.servicio === servicioFiltro;
 
+    const cumplePrioridad = 
+      prioridadFiltro === "todos" || 
+      s.prioridad === prioridadFiltro;
+
     const fechaSolicitud = new Date(s.fecha_creacion);
     const inicio = fechaDesde ? new Date(fechaDesde + "T00:00:00") : null;
     const fin = fechaHasta ? new Date(fechaHasta + "T23:59:59") : null;
@@ -41,16 +62,16 @@ export default function AdminTableClient({ solicitudesIniciales }) {
     const cumpleFecha = (!inicio || fechaSolicitud >= inicio) && 
                         (!fin || fechaSolicitud <= fin);
 
-    return cumpleTexto && cumpleEstado && cumpleServicio && cumpleFecha;
+    return cumpleTexto && cumpleEstado && cumpleServicio && cumplePrioridad && cumpleFecha;
   });
 
-  // 2. Lógica de paginación
+  // 2. Paginación
   const totalPages = Math.ceil(solicitudesFiltradas.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = solicitudesFiltradas.slice(indexOfFirstItem, indexOfLastItem);
 
-  // 3. Estadísticas
+  // 3. Estadísticas para las Cards
   const stats = solicitudesIniciales.reduce((acc, s) => {
     const estado = s.estado?.trim().toLowerCase();
     if (estado === "pendiente") acc.pendientes++;
@@ -61,14 +82,14 @@ export default function AdminTableClient({ solicitudesIniciales }) {
 
   return (
     <>
-      {/* CARDS DE RESUMEN */}
+      {/* CARDS DE RESUMEN (Mantenidas según lo solicitado) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <SummaryCard label="Solicitudes Pendientes" count={stats.pendientes} color="text-[#c8a96a]" />
         <SummaryCard label="En Revisión" count={stats.revision} color="text-[#1f4d3a]" />
         <SummaryCard label="Finalizadas" count={stats.finalizadas} color="text-[#1f4d3a]" />
       </div>
 
-      {/* BARRA DE FILTROS PRINCIPAL */}
+      {/* BARRA DE FILTROS PRINCIPAL (Con Servicio y Prioridad agregados) */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <input
           type="text"
@@ -79,25 +100,36 @@ export default function AdminTableClient({ solicitudesIniciales }) {
         />
 
         <select
-          value={estadoFiltro}
-          onChange={(e) => setEstadoFiltro(e.target.value)}
-          className="border border-[#d8d2c7] rounded-2xl px-4 py-3 bg-white outline-none focus:border-[#c8a96a] shadow-sm"
-        >
-          <option value="todos">Todos los estados</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="en revisión">En revisión</option>
-          <option value="finalizado">Finalizado</option>
-        </select>
-
-        <select
           value={servicioFiltro}
           onChange={(e) => setServicioFiltro(e.target.value)}
-          className="border border-[#d8d2c7] rounded-2xl px-4 py-3 bg-white outline-none focus:border-[#c8a96a] shadow-sm"
+          className="border border-[#d8d2c7] rounded-2xl px-4 py-3 bg-white outline-none focus:border-[#c8a96a] shadow-sm font-medium text-[#1f4d3a]"
         >
           <option value="todos">Todos los servicios</option>
           <option value="Limpieza Corporativa">Limpieza Corporativa</option>
           <option value="Limpieza Residencial">Limpieza Residencial</option>
           <option value="Mantenimiento de Áreas Comunes">Mantenimiento de Áreas Comunes</option>
+        </select>
+
+        <select
+          value={prioridadFiltro}
+          onChange={(e) => setPrioridadFiltro(e.target.value)}
+          className="border border-[#d8d2c7] rounded-2xl px-4 py-3 bg-white outline-none focus:border-[#c8a96a] shadow-sm font-medium text-[#1f4d3a]"
+        >
+          <option value="todos">Prioridad (Todas)</option>
+          <option value="Alta">Alta</option>
+          <option value="Media">Media</option>
+          <option value="Baja">Baja</option>
+        </select>
+
+        <select
+          value={estadoFiltro}
+          onChange={(e) => setEstadoFiltro(e.target.value)}
+          className="border border-[#d8d2c7] rounded-2xl px-4 py-3 bg-white outline-none focus:border-[#c8a96a] shadow-sm font-medium text-[#1f4d3a]"
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="en revisión">En revisión</option>
+          <option value="finalizado">Finalizado</option>
         </select>
       </div>
 
@@ -138,6 +170,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
             <thead className="bg-[#1f4d3a] text-white">
               <tr>
                 <th className="p-5 font-medium">Ticket</th>
+                <th className="p-5 font-medium">Prioridad</th>
                 <th className="p-5 font-medium">Cliente</th>
                 <th className="p-5 font-medium">Empresa</th>
                 <th className="p-5 font-medium">Servicio</th>
@@ -151,6 +184,12 @@ export default function AdminTableClient({ solicitudesIniciales }) {
                 currentItems.map((s) => (
                   <tr key={s.id} className="border-b border-[#f1ede4] hover:bg-[#faf8f3] transition">
                     <td className="p-5 font-semibold text-[#c8a96a]">{s.ticket}</td>
+                    <td className="p-5">
+                      <div className="flex flex-col gap-2">
+                        <PriorityBadge prioridad={s.prioridad} />
+                        <PrioridadSelect solicitudId={s.id} prioridadActual={s.prioridad} />
+                      </div>
+                    </td>
                     <td className="p-5 font-medium text-gray-800">{s.nombre}</td>
                     <td className="p-5 text-gray-600">{s.empresa}</td>
                     <td className="p-5 text-gray-600">{s.servicio}</td>
@@ -175,7 +214,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="p-10 text-center text-gray-400 italic">
+                  <td colSpan="8" className="p-10 text-center text-gray-400 italic">
                     No se encontraron solicitudes con los filtros seleccionados.
                   </td>
                 </tr>
@@ -189,24 +228,21 @@ export default function AdminTableClient({ solicitudesIniciales }) {
           <p className="text-sm text-gray-600">
             Mostrando <span className="font-semibold">{currentItems.length}</span> de <span className="font-semibold">{solicitudesFiltradas.length}</span> resultados
           </p>
-          
           <div className="flex gap-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-[#d8d2c7] rounded-xl hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-[#d8d2c7] rounded-xl disabled:opacity-30 transition"
             >
               Anterior
             </button>
-
             <div className="flex items-center px-4 text-sm font-medium text-[#1f4d3a]">
               Página {currentPage} de {totalPages || 1}
             </div>
-
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages || totalPages === 0}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-[#d8d2c7] rounded-xl hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-[#d8d2c7] rounded-xl disabled:opacity-30 transition"
             >
               Siguiente
             </button>
