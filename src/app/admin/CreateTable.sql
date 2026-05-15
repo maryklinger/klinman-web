@@ -169,4 +169,4 @@ INSERT INTO permisos (clave_permiso, descripcion) VALUES
 ('admin_users', 'Gestionar Usuarios y Configuración');
 
 
-SELECT * FROM usuarios;
+SELECT * FROM solicitudes;
