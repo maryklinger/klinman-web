@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 const IconX = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 const IconCheck = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="5"><polyline points="20 6 9 17 4 12"></polyline></svg>;
@@ -58,7 +58,7 @@ export default function GestionAccesosKlinman() {
       const result = await res.json();
 
       if (result.success) {
-        toast.success("USUARIO REGISTRADO");
+        toast.success("USUARIO REGISTRADO EN SISTEMA");
         setModalRegistro(false);
         obtenerUsuarios();
         form.reset();
@@ -102,9 +102,9 @@ export default function GestionAccesosKlinman() {
   };
 
   return (
-    <div className="p-8 md:p-14 bg-[#f8f5ef] min-h-screen font-sans text-[#1f4d3a] select-none">
-      <Toaster position="top-right" />
-
+    // CONTENEDOR ENVOLVENTE: Asegura el uso de la fuente Geist Sans estandarizada
+    <div className="p-8 md:p-14 bg-[#f8f5ef] min-h-screen font-sans antialiased text-[#1f4d3a] select-none">
+      
       {/* MODAL REGISTRO RE-INTEGRADO */}
       {modalRegistro && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#1f4d3a]/90 backdrop-blur-md">
@@ -115,7 +115,8 @@ export default function GestionAccesosKlinman() {
             </div>
             <div className="space-y-4">
               <input name="nombre" required placeholder="NOMBRE COMPLETO" className="w-full bg-[#f8f5ef] p-6 rounded-[2rem] outline-none font-black uppercase text-xs border-2 border-transparent focus:border-[#c8a96a]" />
-              <input name="email" required type="email" placeholder="EMAIL CORPORATIVO" className="w-full bg-[#f8f5ef] p-6 rounded-[2rem] outline-none font-black uppercase text-xs border-2 border-transparent focus:border-[#c8a96a]" />
+              {/* font-mono para la digitación de correos */}
+              <input name="email" required type="email" placeholder="EMAIL CORPORATIVO" className="w-full bg-[#f8f5ef] p-6 rounded-[2rem] outline-none font-black font-mono uppercase text-xs border-2 border-transparent focus:border-[#c8a96a]" />
               <select name="rol_id" className="w-full bg-[#f8f5ef] p-6 rounded-[2rem] outline-none font-black uppercase text-xs border-2 border-transparent focus:border-[#c8a96a] appearance-none">
                  <option value="1">ADMINISTRADOR</option>
                  <option value="2">OPERADOR</option>
@@ -141,10 +142,11 @@ export default function GestionAccesosKlinman() {
           {usuarios.map((u) => (
             <div key={u.id} onClick={() => setUserActivo(u)} className={`p-6 rounded-[2.5rem] border transition-all cursor-pointer flex items-center justify-between ${userActivo?.id === u.id ? 'bg-white border-[#c8a96a] shadow-xl scale-105' : 'bg-white/40 border-transparent opacity-50'}`}>
               <div className="flex items-center gap-5">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-black ${u.estado === 1 ? 'bg-[#1f4d3a]' : 'bg-red-900'}`}>{u.nombre.charAt(0)}</div>
+                {/* ID o inicial técnico en font-mono */}
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-black font-mono ${u.estado === 1 ? 'bg-[#1f4d3a]' : 'bg-red-900'}`}>{u.nombre.charAt(0)}</div>
                 <div>
                   <h3 className="text-lg font-black uppercase tracking-tighter">{u.nombre}</h3>
-                  <span className={`text-[7px] font-black uppercase p-1 rounded ${u.estado === 1 ? 'text-[#c8a96a]' : 'text-red-500'}`}>{u.estado === 1 ? 'ACTIVO' : 'INACTIVO'}</span>
+                  <span className={`text-[7px] font-black uppercase p-1 rounded font-mono ${u.estado === 1 ? 'text-[#c8a96a]' : 'text-red-500'}`}>{u.estado === 1 ? 'ACTIVO' : 'INACTIVO'}</span>
                 </div>
               </div>
             </div>
@@ -163,7 +165,7 @@ export default function GestionAccesosKlinman() {
                 </div>
                 <button 
                   onClick={toggleEstado}
-                  className={`px-8 py-4 rounded-full font-black text-[9px] uppercase tracking-widest transition-all ${userActivo.estado === 1 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                  className={`px-8 py-4 rounded-full font-black text-[9px] uppercase tracking-widest transition-all font-mono ${userActivo.estado === 1 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
                 >
                   {userActivo.estado === 1 ? '● CUENTA ACTIVA' : '○ CUENTA INACTIVA'}
                 </button>
@@ -174,7 +176,10 @@ export default function GestionAccesosKlinman() {
                   const tiene = userActivo.permisos.includes(p.id);
                   return (
                     <div key={p.id} onClick={() => togglePermiso(p.id)} className={`flex justify-between items-center p-5 rounded-[1.5rem] border-2 cursor-pointer transition-all ${tiene ? 'bg-[#f8f5ef] border-[#1f4d3a]' : 'bg-white border-gray-50 opacity-40'}`}>
-                      <div className="flex flex-col"><span className="text-[10px] font-black uppercase">{p.label}</span><span className="text-[7px] font-bold text-[#c8a96a] uppercase">{p.cat}</span></div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase">{p.label}</span>
+                        <span className="text-[7px] font-bold text-[#c8a96a] uppercase tracking-wider">{p.cat}</span>
+                      </div>
                       <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${tiene ? 'bg-[#1f4d3a] text-white' : 'bg-gray-100 text-transparent'}`}><IconCheck /></div>
                     </div>
                   );

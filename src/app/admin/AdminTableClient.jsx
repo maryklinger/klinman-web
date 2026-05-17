@@ -81,7 +81,8 @@ export default function AdminTableClient({ solicitudesIniciales }) {
   }, { pendientes: 0, revision: 0, finalizadas: 0 });
 
   return (
-    <>
+    // CONTENEDOR ENVOLVENTE: Fuerza el uso de la fuente Geist Sans estandarizada
+    <div className="font-sans antialiased text-[#1f4d3a]">
       {/* CARDS DE RESUMEN (Mantenidas según lo solicitado) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <SummaryCard label="Solicitudes Pendientes" count={stats.pendientes} color="text-[#c8a96a]" />
@@ -183,7 +184,8 @@ export default function AdminTableClient({ solicitudesIniciales }) {
               {currentItems.length > 0 ? (
                 currentItems.map((s) => (
                   <tr key={s.id} className="border-b border-[#f1ede4] hover:bg-[#faf8f3] transition">
-                    <td className="p-5 font-semibold text-[#c8a96a]">{s.ticket}</td>
+                    {/* font-mono opcional para los números de ticket */}
+                    <td className="p-5 font-semibold font-mono text-[#c8a96a]">{s.ticket}</td>
                     <td className="p-5">
                       <div className="flex flex-col gap-2">
                         <PriorityBadge prioridad={s.prioridad} />
@@ -199,7 +201,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
                         <EstadoSelect solicitudId={s.id} estadoActual={s.estado} />
                       </div>
                     </td>
-                    <td className="p-5 text-gray-500 whitespace-nowrap text-sm">
+                    <td className="p-5 text-gray-500 whitespace-nowrap text-sm font-mono">
                       {new Date(s.fecha_creacion).toLocaleDateString("es-CL")}
                     </td>
                     <td className="p-5 text-right">
@@ -236,7 +238,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
             >
               Anterior
             </button>
-            <div className="flex items-center px-4 text-sm font-medium text-[#1f4d3a]">
+            <div className="flex items-center px-4 text-sm font-medium text-[#1f4d3a] font-mono">
               Página {currentPage} de {totalPages || 1}
             </div>
             <button
@@ -249,7 +251,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -257,7 +259,7 @@ function SummaryCard({ label, count, color }) {
   return (
     <div className="bg-white rounded-3xl p-7 shadow-sm border border-[#ece7dc]">
       <p className="text-sm text-gray-500 font-medium">{label}</p>
-      <h2 className={`text-5xl font-bold ${color} mt-3`}>{count}</h2>
+      <h2 className={`text-5xl font-bold font-mono ${color} mt-3`}>{count}</h2>
     </div>
   );
 }

@@ -59,6 +59,7 @@ export async function actualizarPrioridad(id, nuevaPrioridad) {
     revalidatePath("/admin");
     revalidatePath(`/admin/solicitudes/${id}`);
 
+
     return { success: true };
   } catch (error) {
     console.error(error);

@@ -55,7 +55,14 @@ export default async function ClientesPageServer() {
   const clientes = Object.values(cartera);
 
   return (
-    <div className="p-8 md:p-12 space-y-10 bg-[#f8f5ef] min-h-screen">
+    /* ======================================================================
+      ¡CAMBIO CLAVE AQUÍ! 
+      Agregamos 'font-sans antialiased' al contenedor principal para heredar 
+      la tipografía Geist configurada en tu RootLayout.
+      ====================================================================== 
+    */
+    <div className="p-8 md:p-12 space-y-10 bg-[#f8f5ef] min-h-screen font-sans antialiased">
+      
       {/* CABECERA - CON EL BOTÓN REGISTRAR EMPRESA REINSTALADO */}
       <div className="flex justify-between items-end">
         <div>
@@ -64,7 +71,6 @@ export default async function ClientesPageServer() {
             Expediente centralizado de activos corporativos
           </p>
         </div>
-       
       </div>
 
       {/* GRID DE TARJETAS CON TU DISEÑO ORIGINAL */}
@@ -75,12 +81,14 @@ export default async function ClientesPageServer() {
               <div className="absolute top-0 left-0 w-1.5 h-full bg-[#c8a96a] opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
               <div className="flex justify-between items-start mb-8">
+                {/* Forzamos font-black para el identificador visual */}
                 <div className="w-14 h-14 rounded-2xl bg-[#1f4d3a] flex items-center justify-center text-[#c8a96a] font-black text-xl border border-[#c8a96a]/30">
                   {cliente.logo}
                 </div>
                 <div className="text-right">
                   <span className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Tickets</span>
-                  <span className="text-3xl font-black text-[#1f4d3a] leading-none">
+                  {/* Agregamos font-mono opcional si quieres que el número use la variante Mono de Geist */}
+                  <span className="text-3xl font-black text-[#1f4d3a] leading-none font-mono tracking-tight">
                     {cliente.totalTickets}
                   </span>
                 </div>
@@ -116,7 +124,7 @@ export default async function ClientesPageServer() {
                     </div>
                   ))}
                   {cliente.solicitantesUnicos.size > 3 && (
-                    <div className="w-7 h-7 rounded-full bg-[#c8a96a] border-2 border-white flex items-center justify-center text-[8px] font-black text-white">
+                    <div className="w-7 h-7 rounded-full bg-[#c8a96a] border-2 border-white flex items-center justify-center text-[8px] font-black text-white font-mono">
                       +{cliente.solicitantesUnicos.size - 3}
                     </div>
                   )}

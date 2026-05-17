@@ -16,7 +16,11 @@ export default function CerebroKlinmanFinal() {
   const [nuevoServicio, setNuevoServicio] = useState("");
 
   return (
-    <div className="p-8 md:p-14 bg-[#f8f5ef] min-h-screen font-sans text-[#1f4d3a] select-none">
+    /* ======================================================================
+       ¡CAMBIO PRINCIPAL AQUÍ! 
+       Añadimos 'font-sans antialiased' para acoplar la tipografía global Geist.
+       ====================================================================== */
+    <div className="p-8 md:p-14 bg-[#f8f5ef] min-h-screen font-sans antialiased text-[#1f4d3a] select-none">
       
       {/* MODAL DE REGISTRO (SIN CURSIVAS, TODO BLACK) */}
       {modalAbierto && (
@@ -56,6 +60,7 @@ export default function CerebroKlinmanFinal() {
           <h1 className="text-[72px] font-black tracking-[-0.06em] leading-[0.8] uppercase">
             CEREBRO <br/> <span className="text-[#c8a96a]">MAESTRO</span>
           </h1>
+          {/* Añadido font-mono para los registros internos */}
           <p className="text-[12px] font-black text-gray-400 uppercase tracking-[0.6em] mt-8">Sincronización de base de datos activa</p>
         </div>
         <div className="flex gap-4">
@@ -86,12 +91,14 @@ export default function CerebroKlinmanFinal() {
             {servicios.map((s) => (
               <div key={s.id} className="bg-white p-10 rounded-[3.5rem] border border-[#ece7dc] shadow-sm flex items-center justify-between group hover:border-[#1f4d3a] transition-all">
                 <div className="flex items-center gap-12">
-                  <div className="w-16 h-16 bg-[#f8f5ef] rounded-[1.5rem] flex items-center justify-center font-black text-[#c8a96a] text-sm">
+                  {/* font-mono para los ID correlativos */}
+                  <div className="w-16 h-16 bg-[#f8f5ef] rounded-[1.5rem] flex items-center justify-center font-black text-[#c8a96a] text-sm font-mono">
                     {s.id.toString().padStart(2, '0')}
                   </div>
                   <div>
                     <h3 className="text-3xl font-black uppercase tracking-tighter leading-none">{s.nombre}</h3>
-                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] mt-3 block">{s.codigo}</span>
+                    {/* font-mono para el código del SKU / Servicio */}
+                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] mt-3 block font-mono">{s.codigo}</span>
                   </div>
                 </div>
                 <button className="p-4 bg-red-50 text-red-300 rounded-2xl opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white">
@@ -111,7 +118,8 @@ export default function CerebroKlinmanFinal() {
               <div className="p-8 bg-[#f8f5ef] rounded-[2.5rem]">
                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-4">DÍA DE COBRO MENSUAL</span>
                 <div className="flex items-end gap-2">
-                  <span className="text-5xl font-black leading-none text-[#1f4d3a]">05</span>
+                  {/* font-mono asignado al día de cobro */}
+                  <span className="text-5xl font-black leading-none text-[#1f4d3a] font-mono">{"05"}</span>
                   <span className="text-[11px] font-black uppercase mb-1">CADA MES</span>
                 </div>
               </div>
@@ -119,7 +127,8 @@ export default function CerebroKlinmanFinal() {
               <div className="p-8 bg-[#f8f5ef] rounded-[2.5rem]">
                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-4">IMPUESTO (IVA)</span>
                 <div className="flex items-end gap-2">
-                  <span className="text-5xl font-black leading-none text-[#c8a96a]">19</span>
+                  {/* font-mono asignado al porcentaje del IVA */}
+                  <span className="text-5xl font-black leading-none text-[#c8a96a] font-mono">19</span>
                   <span className="text-2xl font-black uppercase mb-1">%</span>
                 </div>
               </div>
@@ -132,15 +141,17 @@ export default function CerebroKlinmanFinal() {
             <div className="space-y-4">
                <div className="flex justify-between border-b border-white/10 pb-4">
                   <span className="text-[10px] font-black uppercase tracking-widest opacity-40">TICKETS PAGADOS</span>
-                  <span className="text-[12px] font-black uppercase">128</span>
+                  {/* font-mono asignado */}
+                  <span className="text-[12px] font-black uppercase font-mono">128</span>
                </div>
                <div className="flex justify-between border-b border-white/10 pb-4">
                   <span className="text-[10px] font-black uppercase tracking-widest opacity-40">PENDIENTES COBRO</span>
-                  <span className="text-[12px] font-black uppercase text-red-400">12</span>
+                  {/* font-mono asignado */}
+                  <span className="text-[12px] font-black uppercase text-red-400 font-mono">12</span>
                </div>
             </div>
             <button className="w-full mt-8 py-5 bg-white/5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-[#1f4d3a] transition-all">
-               VER HISTORIAL DE PAGOS
+                VER HISTORIAL DE PAGOS
             </button>
           </section>
 

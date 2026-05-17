@@ -1,14 +1,13 @@
 'use client';
 
+import React from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function Home() {
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-    // Agrega esto para eliminar cualquier toast que ya esté en pantalla
-  toast.dismiss();
+    toast.dismiss();
 
     const form = e.target;
 
@@ -22,7 +21,6 @@ export default function Home() {
     };
 
     try {
-
       const res = await fetch('/api/contacto', {
         method: 'POST',
         headers: {
@@ -34,560 +32,406 @@ export default function Home() {
       const result = await res.json();
 
       if (result.success) {
-
         toast.success(
-          "Solicitud enviada correctamente. Klinman se pondrá en contacto contigo.",
+          "SOLICITUD ENVIADA CORRECTAMENTE. NUESTRO EQUIPO SE PONDRÁ EN CONTACTO.",
           {
             duration: 5000,
             style: {
               background: '#1f4d3a',
               color: '#ffffff',
               border: '1px solid #c8a96a',
-              padding: '16px',
-              borderRadius: '14px',
+              padding: '20px',
+              borderRadius: '24px',
+              fontWeight: '900',
+              fontSize: '11px',
+              letterSpacing: '0.1em'
             },
           }
         );
-
         form.reset();
-
       } else {
-
         toast.error(
-          result.error || "No fue posible enviar la solicitud.",
+          (result.error || "NO FUE POSIBLE PROCESAR LA SOLICITUD.").toUpperCase(),
           {
             duration: 5000,
             style: {
               background: '#7f1d1d',
               color: '#ffffff',
               border: '1px solid #ef4444',
-              padding: '16px',
-              borderRadius: '14px',
+              padding: '20px',
+              borderRadius: '24px',
+              fontWeight: '900',
+              fontSize: '11px',
+              letterSpacing: '0.1em'
             },
           }
         );
-
         console.error(result.error);
-
       }
-
     } catch (error) {
-
       console.error(error);
-
       toast.error(
-        "Error de conexión con el servidor. Intenta nuevamente.",
+        "ERROR DE CONEXIÓN CON EL SERVIDOR. INTENTE NUEVAMENTE.",
         {
           duration: 5000,
           style: {
             background: '#7f1d1d',
             color: '#ffffff',
             border: '1px solid #ef4444',
-            padding: '16px',
-            borderRadius: '14px',
+            padding: '20px',
+            borderRadius: '24px',
+            fontWeight: '900',
+            fontSize: '11px',
+            letterSpacing: '0.1em'
           },
         }
       );
-
     }
-
   };
 
   return (
+    /* INYECCIÓN FONT-SANS ANTIALIASED */
+    <main className="bg-white text-[#1f4d3a] font-sans antialiased selection:bg-[#1f4d3a] selection:text-white">
 
-    <main className="bg-white text-gray-800">
-
-      {/* TOASTER */}
+      {/* TOASTER CORREGIDO */}
       <Toaster position="top-right" />
 
-      {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-10 py-6 bg-white sticky top-0 z-50">
-
-        <a href="#inicio" className="flex items-center gap-3">
-
-          <div className="w-10 h-10 rounded-full overflow-hidden">
+      {/* NAVBAR MINIMALISTA */}
+      <nav className="flex items-center justify-between px-10 py-8 bg-white border-b border-[#f1ede4] sticky top-0 z-50">
+        <a href="#inicio" className="flex items-center gap-4 group">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-[#ece7dc]">
             <img
               src="/klinman_logo.png"
               alt="logo"
               className="w-full h-full object-cover"
             />
           </div>
-
-          <h1 className="text-xl font-bold tracking-widest text-[#c8a96a]">
+          <h1 className="text-xl font-black tracking-[0.3em] text-[#1f4d3a] group-hover:text-[#c8a96a] transition-colors">
             KLINMAN
           </h1>
-
         </a>
 
-        <ul className="hidden md:flex gap-8 text-sm font-semibold text-black">
-
+        <ul className="hidden md:flex gap-10 text-[11px] font-black tracking-[0.25em] text-gray-400">
           {[
             { name: "INICIO", id: "inicio" },
             { name: "SERVICIOS", id: "servicios" },
             { name: "NOSOTROS", id: "nosotros" },
             { name: "VALORES", id: "valores" },
           ].map((item) => (
-
             <li key={item.id}>
-
               <a
                 href={`#${item.id}`}
-                className="relative group hover:text-[#c8a96a] transition"
+                className="relative group hover:text-[#1f4d3a] transition-colors py-2"
               >
-
                 {item.name}
-
-                <span className="
-                  absolute
-                  left-0
-                  -bottom-1
-                  w-0
-                  h-[2px]
-                  bg-[#c8a96a]
-                  transition-all
-                  duration-300
-                  group-hover:w-full
-                "></span>
-
+                <span className="absolute left-0 -bottom-1 w-0 h-[3px] bg-[#c8a96a] transition-all duration-300 group-hover:w-full"></span>
               </a>
-
             </li>
-
           ))}
-
         </ul>
 
         <a href="#contacto">
-
-          <button className="
-            bg-[#1f4d3a]
-            text-white
-            px-5
-            py-2
-            rounded
-            border
-            border-[#c8a96a]
-            hover:bg-[#16382b]
-            transition
-          ">
+          <button className="bg-[#1f4d3a] text-white px-8 py-3.5 rounded-2xl text-[10px] font-black tracking-[0.2em] border border-[#c8a96a] hover:bg-[#c8a96a] transition-all shadow-lg shadow-[#1f4d3a]/10">
             CONTACTO
           </button>
-
         </a>
-
       </nav>
 
-      {/* HERO */}
-      <section id="inicio" className="relative w-full h-[500px]">
-
+      {/* HERO DE IMPACTO - CONTRASTE Y LEGIBILIDAD PREMIUM */}
+      <section id="inicio" className="relative w-full h-[650px] flex items-center justify-center overflow-hidden">
         <img
           src="/fondo_covert.jpg"
           className="absolute w-full h-full object-cover"
+          alt="Klinman Cover"
         />
+        {/* Capa de gradiente oscuro neutro que protege la lectura en la zona alta/media */}
+        <div className="absolute w-full h-full bg-gradient-to-b from-black/70 via-black/45 to-black/60 backdrop-blur-[1px]"></div>
 
-        <div className="absolute w-full h-full bg-black/60"></div>
-
-        <div className="
-          relative
-          z-10
-          flex
-          flex-col
-          items-center
-          justify-center
-          h-full
-          text-center
-          text-white
-          px-6
-        ">
-
-          <h1 className="text-4xl md:text-6xl font-semibold">
-            TRES DÉCADAS ELEVANDO EL ESTÁNDAR DE LIMPIEZA
+        <div className="relative z-10 flex flex-col items-center justify-center text-center text-white px-6 max-w-5xl mx-auto">
+          {/* Título con text-shadow aplicado directamente para máxima nitidez en las ventanas */}
+          <h1 
+            className="text-4xl md:text-[64px] font-black tracking-[-0.05em] leading-[0.95] uppercase"
+            style={{ textShadow: '0px 4px 12px rgba(0, 0, 0, 0.7), 0px 2px 4px rgba(0, 0, 0, 0.5)' }}
+          >
+            Tres décadas elevando el <br/>
+            <span 
+              className="text-[#c8a96a]"
+              style={{ textShadow: '0px 4px 12px rgba(0, 0, 0, 0.8), 0px 2px 4px rgba(0, 0, 0, 0.6)' }}
+            >
+              estándar de limpieza
+            </span>
           </h1>
-
-          <p className="mt-4 text-lg">
-            Cuidamos sus espacios como activos de valor.
+          
+          {/* Subtítulo optimizado */}
+          <p 
+            className="mt-8 text-[12px] font-black tracking-[0.4em] text-gray-200 uppercase"
+            style={{ textShadow: '0px 2px 8px rgba(0, 0, 0, 0.8)' }}
+          >
+            Cuidamos sus espacios como activos de valor estratégico
           </p>
-
-          <a href="#contacto">
-
-            <button className="
-              mt-6
-              border
-              border-white
-              px-6
-              py-3
-              hover:bg-white
-              hover:text-black
-              transition
-            ">
+          
+          <a href="#contacto" className="mt-12">
+            <button className="bg-transparent text-white px-10 py-5 rounded-[2rem] text-[11px] font-black tracking-[0.3em] uppercase border-2 border-white/40 hover:border-white hover:bg-white hover:text-[#1f4d3a] transition-all shadow-xl">
               SOLICITAR ASESORÍA
             </button>
-
           </a>
-
         </div>
-
       </section>
 
-      {/* SERVICIOS */}
-      <section id="servicios" className="py-24 px-6 bg-[#f8f5ef]">
+      {/* SECCIÓN SERVICIOS */}
+      <section id="servicios" className="py-32 px-8 bg-[#f8f5ef]">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-20 text-center md:text-left">
+            <h2 className="text-4xl font-black text-[#1f4d3a] tracking-[-0.04em] uppercase">
+              SERVICIOS DE CARTERA
+            </h2>
+            <p className="text-gray-400 font-black uppercase text-[11px] tracking-[0.3em] mt-3">
+              Soluciones técnicas de precisión operativa
+            </p>
+          </div>
 
-        <div className="max-w-6xl mx-auto">
-
-          <h2 className="text-3xl font-semibold mb-12">
-            Nuestros Servicios
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-
+          <div className="grid lg:grid-cols-3 gap-12">
             {[
               {
                 titulo: "Limpieza Corporativa",
-                desc: "Espacios impecables con estándares profesionales.",
+                desc: "Espacios corporativos impecables gobernados bajo rigurosos estándares profesionales.",
                 img: "/limpieza_corporativa.jpg",
               },
               {
                 titulo: "Mantenimiento Técnico",
-                desc: "Tratamientos especializados para superficies.",
+                desc: "Tratamientos especializados y conservación de superficies e infraestructura de alto tráfico.",
                 img: "/mantenimiento_Tecnico.jpg",
               },
               {
                 titulo: "Servicios Especializados",
-                desc: "Soluciones a medida para cada cliente.",
+                desc: "Soluciones a la medida de los requerimientos logísticos y operativos de cada cliente.",
                 img: "/servicios_especializados.jpg",
               },
             ].map((s, i) => (
-
               <div
                 key={i}
-                className="
-                  group
-                  border
-                  rounded-xl
-                  overflow-hidden
-                  bg-white
-                  hover:shadow-lg
-                  transition
-                "
+                className="group border border-[#ece7dc] rounded-[3.5rem] overflow-hidden bg-white hover:border-[#1f4d3a] hover:shadow-xl transition-all duration-500"
               >
-
-                <img
-                  src={s.img}
-                  className="
-                    w-full
-                    h-[250px]
-                    object-cover
-                    group-hover:scale-105
-                    transition
-                    duration-500
-                  "
-                />
-
-                <div className="p-6">
-
-                  <h3 className="text-lg font-semibold mb-2">
-                    {s.titulo}
-                  </h3>
-
-                  <p className="text-gray-600 text-sm mb-6">
-                    {s.desc}
-                  </p>
-
-                  <a href="#contacto">
-
-                    <button className="
-                      text-sm
-                      border
-                      px-4
-                      py-2
-                      rounded-full
-                      hover:bg-black
-                      hover:text-white
-                      transition
-                    ">
-                      Solicitar →
-                    </button>
-
-                  </a>
-
+                <div className="h-[280px] overflow-hidden relative">
+                  <img
+                    src={s.img}
+                    alt={s.titulo}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute top-6 left-6 w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl flex items-center justify-center text-[#c8a96a] font-mono font-black text-xs border border-[#ece7dc]">
+                    {(i + 1).toString().padStart(2, '0')}
+                  </div>
                 </div>
 
+                <div className="p-10">
+                  <h3 className="text-2xl font-black uppercase tracking-tighter text-[#1f4d3a] mb-4">
+                    {s.titulo}
+                  </h3>
+                  <p className="text-gray-500 text-[13px] font-medium leading-relaxed mb-8">
+                    {s.desc}
+                  </p>
+                  <a href="#contacto">
+                    <button className="text-[10px] font-black uppercase tracking-[0.2em] px-6 py-3 bg-[#f8f5ef] text-[#1f4d3a] rounded-xl border border-[#ece7dc] hover:bg-[#1f4d3a] hover:text-white hover:border-[#1f4d3a] transition-all">
+                      Solicitar Asesoría →
+                    </button>
+                  </a>
+                </div>
               </div>
-
             ))}
-
           </div>
-
         </div>
-
       </section>
 
-      {/* NOSOTROS */}
-      <section id="nosotros" className="py-24 px-6 text-center">
-
-        <h2 className="text-3xl font-semibold mb-6">
-          Nosotros
+      {/* SECCIÓN NOSOTROS */}
+      <section id="nosotros" className="py-32 px-8 text-center max-w-4xl mx-auto border-b border-[#f1ede4]">
+        <h2 className="text-4xl font-black uppercase tracking-[-0.04em] mb-8">
+          NOSOTROS
         </h2>
-
-        <p className="max-w-2xl mx-auto text-gray-600">
-          Klinman es su socio estratégico en limpieza técnica y mantenimiento corporativo.
+        <p className="text-xl md:text-2xl font-light text-[#1f4d3a]/80 leading-relaxed tracking-tight">
+          Klinman opera como un <span className="font-black text-[#1f4d3a]">socio estratégico</span> integrado en los esquemas de mantenimiento corporativo y limpieza de alta complejidad técnica en el país.
         </p>
-
       </section>
 
-      {/* VALORES */}
-      <section id="valores" className="py-24 px-6 bg-[#f9f9f9] text-center">
-
-        <h2 className="text-3xl font-semibold mb-12">
-          Valores
+     {/* SECCIÓN VALORES */}
+      <section id="valores" className="py-32 px-8 bg-white text-center">
+        <h2 className="text-4xl font-black uppercase tracking-[-0.04em] mb-4">
+          VALORES CORPORATIVOS
         </h2>
+        <p className="text-gray-400 font-black uppercase text-[10px] tracking-[0.3em] mb-20">Pilares fundamentales de ejecución</p>
 
-        <div className="
-          grid
-          grid-cols-2
-          md:grid-cols-4
-          gap-8
-          max-w-4xl
-          mx-auto
-        ">
-
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
           {[
-            "EXPERIENCIA",
-            "COMPROMISO",
-            "SINERGIA",
-            "RESPETO",
+            {
+              nombre: "EXPERIENCIA",
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              )
+            },
+            {
+              nombre: "COMPROMISO",
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              )
+            },
+            {
+              nombre: "SINERGIA",
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5h20c0-2.31-1-4.24-2.5-5.5" />
+                  <path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 0 0 10 0V7a5 5 0 0 0-5-5z" />
+                </svg>
+              )
+            },
+            {
+              nombre: "RESPETO",
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              )
+            }
           ].map((v, i) => (
-
             <div
               key={i}
-              className="
-                p-6
-                rounded-xl
-                hover:bg-white
-                transition
-              "
+              className="group p-10 rounded-[3rem] bg-[#f8f5ef] border border-[#ece7dc] flex flex-col items-center justify-center gap-6 hover:bg-[#1f4d3a] hover:border-[#1f4d3a] transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-[#1f4d3a]/10"
             >
-              {v}
+              {/* Contenedor del Icono */}
+              <div className="text-[#c8a96a] group-hover:text-white transition-colors duration-300 transform group-hover:scale-110">
+                {v.icon}
+              </div>
+              
+              {/* Texto del Valor */}
+              <span className="font-black text-xs tracking-[0.25em] text-[#1f4d3a] group-hover:text-white transition-colors duration-300">
+                {v.nombre}
+              </span>
             </div>
-
           ))}
-
         </div>
-
       </section>
 
-      {/* FORMULARIO */}
-      <section
-        id="contacto"
-        className="py-24 px-6 bg-white"
-      >
+      {/* FORMULARIO DE CONTACTO PREMIUM */}
+      <section id="contacto" className="py-32 px-8 bg-[#f8f5ef] border-t border-[#ece7dc]">
+        <div className="max-w-4xl mx-auto bg-white rounded-[4rem] border border-[#ece7dc] p-12 md:p-16 shadow-sm">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-black uppercase tracking-tighter text-[#1f4d3a]">
+              FORMULARIO DE CONTACTO
+            </h2>
+            <p className="text-gray-400 font-black uppercase text-[10px] tracking-[0.3em] mt-3">
+              Inicie el alta operaria de sus activos
+            </p>
+          </div>
 
-        <div className="max-w-4xl mx-auto">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col space-y-2">
+                <input
+                  name="nombre"
+                  type="text"
+                  placeholder="NOMBRE COMPLETO"
+                  className="w-full bg-[#f8f5ef] border border-transparent focus:border-[#c8a96a] p-5 rounded-2xl outline-none font-black uppercase text-xs tracking-wider text-[#1f4d3a] transition-all"
+                  required
+                />
+              </div>
 
-          <h2 className="
-            text-3xl
-            font-semibold
-            mb-10
-            text-center
-          ">
-            Formulario de Contacto
-          </h2>
+              <div className="flex flex-col space-y-2">
+                <input
+                  name="empresa"
+                  type="text"
+                  placeholder="EMPRESA"
+                  className="w-full bg-[#f8f5ef] border border-transparent focus:border-[#c8a96a] p-5 rounded-2xl outline-none font-black uppercase text-xs tracking-wider text-[#1f4d3a] transition-all"
+                  required
+                />
+              </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
+              <div className="flex flex-col space-y-2">
+                <input
+                  name="telefono"
+                  type="text"
+                  placeholder="TELÉFONO DE CONTACTO"
+                  className="w-full bg-[#f8f5ef] border border-transparent focus:border-[#c8a96a] p-5 rounded-2xl outline-none font-black uppercase text-xs tracking-wider text-[#1f4d3a] font-mono transition-all"
+                  required
+                />
+              </div>
 
-            <div className="
-              grid
-              grid-cols-1
-              md:grid-cols-2
-              gap-6
-            ">
-
-              <input
-                name="nombre"
-                placeholder="Nombre"
-                className="
-                  border-b
-                  p-3
-                  outline-none
-                  focus:border-[#c8a96a]
-                "
-                required
-              />
-
-              <input
-                name="empresa"
-                placeholder="Empresa"
-                className="
-                  border-b
-                  p-3
-                  outline-none
-                  focus:border-[#c8a96a]
-                "
-                required
-              />
-
-              <input
-                name="telefono"
-                placeholder="Teléfono"
-                className="
-                  border-b
-                  p-3
-                  outline-none
-                  focus:border-[#c8a96a]
-                "
-                required
-              />
-
-              <input
-                name="email"
-                type="email"
-                placeholder="Email"
-                className="
-                  border-b
-                  p-3
-                  outline-none
-                  focus:border-[#c8a96a]
-                "
-                required
-              />
-
+              <div className="flex flex-col space-y-2">
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="CORREO ELECTRÓNICO"
+                  className="w-full bg-[#f8f5ef] border border-transparent focus:border-[#c8a96a] p-5 rounded-2xl outline-none font-black uppercase text-xs tracking-wider text-[#1f4d3a] transition-all"
+                  required
+                />
+              </div>
             </div>
 
-            <select
-              name="servicio"
-              className="
-                w-full
-                border-b
-                p-3
-                outline-none
-                focus:border-[#c8a96a]
-              "
-              required
-            >
+            <div className="flex flex-col space-y-2">
+              <select
+                name="servicio"
+                className="w-full bg-[#f8f5ef] border border-transparent focus:border-[#c8a96a] p-5 rounded-2xl outline-none font-black uppercase text-xs tracking-wider text-[#1f4d3a] appearance-none transition-all"
+                required
+              >
+                <option value="" className="text-gray-400">TIPO DE SERVICIO REQUERIDO</option>
+                <option value="Limpieza Corporativa">LIMPIEZA CORPORATIVA</option>
+                <option value="Mantenimiento Técnico">MANTENIMIENTO TÉCNICO</option>
+                <option value="Servicios Especializados">SERVICIOS ESPECIALIZADOS</option>
+              </select>
+            </div>
 
-              <option value="">
-                Tipo de Servicio
-              </option>
+            <div className="flex flex-col space-y-2">
+              <textarea
+                name="mensaje"
+                placeholder="MENSAJE ADICIONAL (OPCIONAL)"
+                className="w-full bg-[#f8f5ef] border border-transparent focus:border-[#c8a96a] p-6 rounded-[2rem] outline-none font-black uppercase text-xs tracking-wider text-[#1f4d3a] transition-all"
+                rows={5}
+              />
+            </div>
 
-              <option value="Limpieza Corporativa">
-                Limpieza Corporativa
-              </option>
-
-              <option value="Limpieza Residencial">
-                Limpieza Residencial
-              </option>
-
-
-              <option value="Mantenimiento de Áreas Comunes">
-                Mantenimiento de Áreas Comunes
-              </option>
-
-            </select>
-
-            <textarea
-              name="mensaje"
-              placeholder="Mensaje (opcional)"
-              className="
-                w-full
-                border
-                p-4
-                rounded-2xl
-                outline-none
-                focus:border-[#c8a96a]
-              "
-              rows={5}
-            />
-
-            <button
-              type="submit"
-              className="
-                mt-4
-                bg-[#1f4d3a]
-                text-white
-                px-8
-                py-3
-                rounded-full
-                border
-                border-[#c8a96a]
-                hover:bg-[#16382b]
-                transition
-              "
-            >
-              SOLICITAR CONTACTO
-            </button>
-
+            <div className="pt-4 text-center">
+              <button
+                type="submit"
+                className="bg-[#1f4d3a] text-white px-12 py-5 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] border border-[#c8a96a] hover:bg-[#c8a96a] transition-all shadow-xl shadow-[#1f4d3a]/10 w-full md:w-auto"
+              >
+                SOLICITAR REGISTRO DE CONTACTO
+              </button>
+            </div>
           </form>
-
         </div>
-
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-[#f8f5ef] border-t py-8 px-6">
-
-        <div className="
-          max-w-6xl
-          mx-auto
-          flex
-          flex-col
-          md:flex-row
-          items-center
-          justify-between
-          gap-6
-        ">
-
-          <div className="flex items-center gap-3">
-
+      {/* FOOTER CORPORATIVO */}
+      <footer className="bg-white border-t border-[#ece7dc] py-12 px-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex items-center gap-4">
             <img
               src="/klinman_logo.png"
-              className="w-10"
+              className="w-8 h-8 object-cover"
+              alt="Klinman Logo"
             />
-
-            <span className="
-              text-xl
-              font-semibold
-              text-[#c8a96a]
-            ">
-              KLINMAN
+            <span className="text-sm font-black tracking-[0.3em] text-[#1f4d3a]">
+              KLINMAN S.A.
             </span>
-
           </div>
 
-          <div className="
-            text-sm
-            text-gray-700
-            text-center
-          ">
-            Morandé 776, Santiago
+          <div className="text-[11px] font-black tracking-widest text-gray-400 uppercase font-mono">
+            Morandé 776, Santiago — Chile
           </div>
 
-          <div className="flex gap-4">
-
-            <a href="#">
-              LinkedIn
-            </a>
-
-            <a href="#">
-              Facebook
-            </a>
-
-            <a href="mailto:correo@gmail.com">
-              Correo
-            </a>
-
-            <a href="https://wa.me/56900000000">
-              WhatsApp
-            </a>
-
+          <div className="flex gap-6 text-[11px] font-black tracking-wider text-gray-400 uppercase">
+            <a href="#" className="hover:text-[#c8a96a] transition-colors">LinkedIn</a>
+            <a href="#" className="hover:text-[#c8a96a] transition-colors">Facebook</a>
+            <a href="mailto:correo@gmail.com" className="hover:text-[#c8a96a] transition-colors">Correo</a>
+            <a href="https://wa.me/56900000000" className="hover:text-[#c8a96a] transition-colors font-mono">WhatsApp</a>
           </div>
-
         </div>
-
       </footer>
-
     </main>
   );
 }

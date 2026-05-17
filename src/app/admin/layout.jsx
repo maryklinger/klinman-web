@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import { 
   Squares2X2Icon, 
   ClipboardDocumentListIcon, 
-  UsersIcon, 
+  UsersIcon,      // Este es el de Clientes (múltiples personas)
+  UserGroupIcon,  // AGREGADO: Este lo usaremos para la opción de Usuarios/Equipo
   ChartBarIcon, 
   Cog6ToothIcon 
 } from "@heroicons/react/24/outline";
@@ -13,9 +14,11 @@ import {
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
 
+  // LISTA ACTUALIZADA CON LA RUTA DE INTERFAZ DE USUARIOS
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <Squares2X2Icon className="w-6 h-6" />, href: '/admin' },
     { id: 'solicitudes', label: 'Solicitudes', icon: <ClipboardDocumentListIcon className="w-6 h-6" />, href: '/admin/solicitudes' },
+    { id: 'usuarios', label: 'Usuarios', icon: <UserGroupIcon className="w-6 h-6" />, href: '/admin/usuarios' }, // AGREGADO CON ÉXITO
     { id: 'clientes', label: 'Clientes', icon: <UsersIcon className="w-6 h-6" />, href: '/admin/clientes' },
     { id: 'reportes', label: 'Reportes', icon: <ChartBarIcon className="w-6 h-6" />, href: '/admin/reportes' },
     { id: 'configuracion', label: 'Configuración', icon: <Cog6ToothIcon className="w-6 h-6" />, href: '/admin/configuracion' },
@@ -27,19 +30,23 @@ export default function AdminLayout({ children }) {
       <aside className="w-64 bg-[#1f4d3a] text-white flex flex-col fixed h-full shadow-2xl z-50">
         <div className="p-8">
           <h1 className="text-2xl font-bold text-[#c8a96a] tracking-tight">KLINMAN</h1>
-          <p className="text-[10px] text-white/50 uppercase tracking-[0.2em] mt-1 font-bold">Panel Administrativo</p>
+          <p className="text-[10px] text-white/50 uppercase tracking-[0.2em] mt-1 font-bold">Panel Administrative</p>
         </div>
 
         <nav className="flex-1 px-4 space-y-2">
           {menuItems.map((item) => {
-            const isActive = pathname === item.href;
+            // Lógica mejorada para que se ilumine si estás en sub-rutas de usuarios
+            const isActive = item.href === '/admin' 
+              ? pathname === '/admin' 
+              : pathname.startsWith(item.href);
+
             return (
               <Link
                 key={item.id}
                 href={item.href}
                 className={`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all font-bold text-sm ${
                   isActive 
-                  ? "bg-white/10 text-[#c8a96a] shadow-inner" 
+                  ? "bg-white/10 text-[#c8a96a] shadow-inner translate-x-1" 
                   : "text-white/60 hover:bg-white/5 hover:text-white"
                 }`}
               >
