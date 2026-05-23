@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link'; // Importado para la redirección limpia
 import toast, { Toaster } from 'react-hot-toast';
+import { UserIcon } from "@heroicons/react/24/outline"; // Icono de ingreso de usuario
 
 export default function Home() {
 
@@ -90,13 +92,11 @@ export default function Home() {
   };
 
   return (
-    /* INYECCIÓN FONT-SANS ANTIALIASED */
     <main className="bg-white text-[#1f4d3a] font-sans antialiased selection:bg-[#1f4d3a] selection:text-white">
 
-      {/* TOASTER CORREGIDO */}
       <Toaster position="top-right" />
 
-      {/* NAVBAR MINIMALISTA */}
+      {/* NAVBAR MINIMALISTA CON ICONO DE ACCESO USUARIO */}
       <nav className="flex items-center justify-between px-10 py-8 bg-white border-b border-[#f1ede4] sticky top-0 z-50">
         <a href="#inicio" className="flex items-center gap-4 group">
           <div className="w-10 h-10 rounded-full overflow-hidden border border-[#ece7dc]">
@@ -130,25 +130,35 @@ export default function Home() {
           ))}
         </ul>
 
-        <a href="#contacto">
-          <button className="bg-[#1f4d3a] text-white px-8 py-3.5 rounded-2xl text-[10px] font-black tracking-[0.2em] border border-[#c8a96a] hover:bg-[#c8a96a] transition-all shadow-lg shadow-[#1f4d3a]/10">
-            CONTACTO
-          </button>
-        </a>
+        {/* GRUPO DE BOTONES: ACCESO + CONTACTO */}
+        <div className="flex items-center gap-4">
+          {/* ICONO DE INGRESO DE USUARIO CON DISEÑO REDONDEADO PREMIUM */}
+          <Link 
+            href="/admin/login" 
+            title="Ingreso de Operadores / Staff"
+            className="p-3.5 border-2 border-[#ece7dc] text-[#1f4d3a] hover:border-[#1f4d3a] hover:bg-[#faf8f3] rounded-2xl transition-all flex items-center justify-center group"
+          >
+            <UserIcon className="w-5 h-5 text-[#1f4d3a] group-hover:text-[#c8a96a] transition-colors" />
+          </Link>
+
+          <a href="#contacto">
+            <button className="bg-[#1f4d3a] text-white px-8 py-3.5 rounded-2xl text-[10px] font-black tracking-[0.2em] border border-[#c8a96a] hover:bg-[#c8a96a] transition-all shadow-lg shadow-[#1f4d3a]/10">
+              CONTACTO
+            </button>
+          </a>
+        </div>
       </nav>
 
-      {/* HERO DE IMPACTO - CONTRASTE Y LEGIBILIDAD PREMIUM */}
+      {/* HERO DE IMPACTO */}
       <section id="inicio" className="relative w-full h-[650px] flex items-center justify-center overflow-hidden">
         <img
           src="/fondo_covert.jpg"
           className="absolute w-full h-full object-cover"
           alt="Klinman Cover"
         />
-        {/* Capa de gradiente oscuro neutro que protege la lectura en la zona alta/media */}
         <div className="absolute w-full h-full bg-gradient-to-b from-black/70 via-black/45 to-black/60 backdrop-blur-[1px]"></div>
 
         <div className="relative z-10 flex flex-col items-center justify-center text-center text-white px-6 max-w-5xl mx-auto">
-          {/* Título con text-shadow aplicado directamente para máxima nitidez en las ventanas */}
           <h1 
             className="text-4xl md:text-[64px] font-black tracking-[-0.05em] leading-[0.95] uppercase"
             style={{ textShadow: '0px 4px 12px rgba(0, 0, 0, 0.7), 0px 2px 4px rgba(0, 0, 0, 0.5)' }}
@@ -162,7 +172,6 @@ export default function Home() {
             </span>
           </h1>
           
-          {/* Subtítulo optimizado */}
           <p 
             className="mt-8 text-[12px] font-black tracking-[0.4em] text-gray-200 uppercase"
             style={{ textShadow: '0px 2px 8px rgba(0, 0, 0, 0.8)' }}
@@ -252,7 +261,7 @@ export default function Home() {
         </p>
       </section>
 
-     {/* SECCIÓN VALORES */}
+      {/* SECCIÓN VALORES */}
       <section id="valores" className="py-32 px-8 bg-white text-center">
         <h2 className="text-4xl font-black uppercase tracking-[-0.04em] mb-4">
           VALORES CORPORATIVOS
@@ -303,12 +312,9 @@ export default function Home() {
               key={i}
               className="group p-10 rounded-[3rem] bg-[#f8f5ef] border border-[#ece7dc] flex flex-col items-center justify-center gap-6 hover:bg-[#1f4d3a] hover:border-[#1f4d3a] transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-[#1f4d3a]/10"
             >
-              {/* Contenedor del Icono */}
               <div className="text-[#c8a96a] group-hover:text-white transition-colors duration-300 transform group-hover:scale-110">
                 {v.icon}
               </div>
-              
-              {/* Texto del Valor */}
               <span className="font-black text-xs tracking-[0.25em] text-[#1f4d3a] group-hover:text-white transition-colors duration-300">
                 {v.nombre}
               </span>

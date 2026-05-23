@@ -139,6 +139,23 @@ CREATE TABLE permisos (
 );
 
 
+--INSERTS:
+-- 1. Limpiamos la tabla de permisos para no duplicar datos
+DELETE FROM rol_permisos;
+DELETE FROM permisos;
+
+-- 2. Insertamos las claves maestros traduciendo tus checkboxes al formato del Layout
+INSERT INTO permisos (clave_permiso, descripcion) VALUES 
+('dashboard', 'ACCESO AL DASHBOARD'),
+('solicitudes', 'ACCESO A SOLICITUDES'),
+('clientes', 'ACCESO A CLIENTES'),
+('reportes', 'ACCESO A REPORTES'),
+('configuracion', 'ACCESO A CONFIGURAR'),
+('cambiar_prioridad', 'CAMBIAR PRIORIDAD'),
+('cambiar_estado', 'CAMBIAR ESTADO'),
+('modificar_permisos', 'MODIFICAR PERMISOS USUARIOS'),
+('descargar_reportes', 'DESCARGAR REPORTES');
+
 
 -- 4. Tabla Intermedia: Matriz de Permisos (Aquí se guarda lo que "marcas")
 
@@ -155,6 +172,14 @@ CREATE TABLE rol_permisos (
 );
 
 
+CREATE TABLE usuario_permisos (
+    usuario_id INT FOREIGN KEY REFERENCES usuarios(id),
+    permiso_id INT FOREIGN KEY REFERENCES permisos(id),
+    PRIMARY KEY (usuario_id, permiso_id)
+);
+
+
+
 
 -- INSERCIÓN INICIAL DE DATOS (Ejemplo)
 
@@ -169,4 +194,23 @@ INSERT INTO permisos (clave_permiso, descripcion) VALUES
 ('admin_users', 'Gestionar Usuarios y Configuración');
 
 
-SELECT * FROM solicitudes;
+
+
+
+
+SELECT * FROM rol_permisos;
+
+SELECT * FROM permisos;
+
+SELECT * FROM usuarios;
+
+
+
+
+-- Para ELIMINAR los registros 
+DELETE FROM rol_permisos;
+DELETE FROM permisos;
+
+DELETE usuarios
+
+WHERE estado = 0;

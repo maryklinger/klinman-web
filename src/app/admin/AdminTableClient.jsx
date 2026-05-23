@@ -21,7 +21,8 @@ function PriorityBadge({ prioridad }) {
   );
 }
 
-export default function AdminTableClient({ solicitudesIniciales }) {
+// 🔑 AGREGAMOS "permisos = []" EN LOS PROPS DEL COMPONENTE
+export default function AdminTableClient({ solicitudesIniciales, permisos = [] }) {
   const [busqueda, setBusqueda] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState("todos");
   const [servicioFiltro, setServicioFiltro] = useState("todos");
@@ -81,16 +82,15 @@ export default function AdminTableClient({ solicitudesIniciales }) {
   }, { pendientes: 0, revision: 0, finalizadas: 0 });
 
   return (
-    // CONTENEDOR ENVOLVENTE: Fuerza el uso de la fuente Geist Sans estandarizada
     <div className="font-sans antialiased text-[#1f4d3a]">
-      {/* CARDS DE RESUMEN (Mantenidas según lo solicitado) */}
+      {/* CARDS DE RESUMEN */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <SummaryCard label="Solicitudes Pendientes" count={stats.pendientes} color="text-[#c8a96a]" />
         <SummaryCard label="En Revisión" count={stats.revision} color="text-[#1f4d3a]" />
         <SummaryCard label="Finalizadas" count={stats.finalizadas} color="text-[#1f4d3a]" />
       </div>
 
-      {/* BARRA DE FILTROS PRINCIPAL (Con Servicio y Prioridad agregados) */}
+      {/* BARRA DE FILTROS PRINCIPAL */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <input
           type="text"
@@ -184,23 +184,32 @@ export default function AdminTableClient({ solicitudesIniciales }) {
               {currentItems.length > 0 ? (
                 currentItems.map((s) => (
                   <tr key={s.id} className="border-b border-[#f1ede4] hover:bg-[#faf8f3] transition">
-                    {/* font-mono opcional para los números de ticket */}
                     <td className="p-5 font-semibold font-mono text-[#c8a96a]">{s.ticket}</td>
+                    
+                    {/* 🔒 CANDADO PARA PRIORIDAD */}
                     <td className="p-5">
                       <div className="flex flex-col gap-2">
                         <PriorityBadge prioridad={s.prioridad} />
-                        <PrioridadSelect solicitudId={s.id} prioridadActual={s.prioridad} />
+                        {permisos.includes("cambiar prioridad") && (
+                          <PrioridadSelect solicitudId={s.id} prioridadActual={s.prioridad} />
+                        )}
                       </div>
                     </td>
+
                     <td className="p-5 font-medium text-gray-800">{s.nombre}</td>
                     <td className="p-5 text-gray-600">{s.empresa}</td>
                     <td className="p-5 text-gray-600">{s.servicio}</td>
+                    
+                    {/* 🔒 CANDADO PARA ESTADO */}
                     <td className="p-5">
                       <div className="flex items-center gap-3">
                         <StatusBadge estado={s.estado} />
-                        <EstadoSelect solicitudId={s.id} estadoActual={s.estado} />
+                        {permisos.includes("cambiar estado") && (
+                          <EstadoSelect solicitudId={s.id} estadoActual={s.estado} />
+                        )}
                       </div>
                     </td>
+
                     <td className="p-5 text-gray-500 whitespace-nowrap text-sm font-mono">
                       {new Date(s.fecha_creacion).toLocaleDateString("es-CL")}
                     </td>
