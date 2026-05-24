@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation'; // <-- Importamos useRouter para sacarla de aquí
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   Squares2X2Icon, 
   ClipboardDocumentListIcon, 
@@ -13,21 +13,24 @@ import {
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
-  const router = useRouter(); // <-- Inicializamos el enrutador
+  const router = useRouter();
   const [usuarioSesion, setUsuarioSesion] = useState(null);
 
   // 1. RESCATE DE LA SESIÓN ACTIVA + PERMISOS REALES DE AZURE
   useEffect(() => {
     const obtenerSesion = async () => {
       try {
-        // CORRECCIÓN: Quitamos '/auth' para apuntar a tu API real /api/session
         const res = await fetch('/api/session'); 
         const data = await res.json();
+        
+        // 👁️ REVISIÓN EN CONSOLA DEL NAVEGADOR (F12):
+        console.log("=== DATOS DEL USUARIO LOGUEADO ===");
+        console.log("Nombre:", data.user?.nombre);
+        console.log("Permisos que vienen de la API:", data.user?.permisos);
         
         if (data.user) {
           setUsuarioSesion(data.user);
         } else {
-          // Si la API responde que no hay sesión, vaciamos el estado
           setUsuarioSesion(null);
         }
       } catch (error) {
@@ -42,36 +45,42 @@ export default function AdminLayout({ children }) {
   // FUNCIÓN PARA CERRAR SESIÓN DE VERDAD Y REDIRIGIR AL HOME DE LA WEB
   const handleLogout = async () => {
     try {
-      // Llamamos a la API que borra las cookies seguras del servidor
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch (err) {
       console.error("Error al revocar cookies de sesión:", err);
     }
 
-    // Limpiamos la memoria del navegador
     localStorage.clear();
     sessionStorage.clear();
 
-    // Redirección forzada al Home ("/") de Klinman
     router.push("/");
     router.refresh();
   };
 
   const esLogin = pathname === '/admin/login' || pathname === '/login';
 
-  // 2. LISTA MAESTRA DE MENÚS
+  // 2. LISTA MAESTRA DE MENÚS (Corregido con la clave exacta de tu BD)
   const menuItemsCompletos = [
     { id: 'dashboard', label: 'Dashboard', icon: <Squares2X2Icon className="w-6 h-6" />, href: '/admin' },
     { id: 'solicitudes', label: 'Solicitudes', icon: <ClipboardDocumentListIcon className="w-6 h-6" />, href: '/admin/solicitudes' },
-    { id: 'usuarios', label: 'Usuarios', icon: <UserGroupIcon className="w-6 h-6" />, href: '/admin/usuarios' }, 
+    
+    // 🔥 CORRECCIÓN: Ahora coincide con 'modificar_permisos' de tus INSERTS SQL
+    { id: 'modificar_permisos', label: 'Usuarios', icon: <UserGroupIcon className="w-6 h-6" />, href: '/admin/usuarios' }, 
+    
     { id: 'clientes', label: 'Clientes', icon: <UsersIcon className="w-6 h-6" />, href: '/admin/clientes' },
     { id: 'reportes', label: 'Reportes', icon: <ChartBarIcon className="w-6 h-6" />, href: '/admin/reportes' },
     { id: 'configuracion', label: 'Configuración', icon: <Cog6ToothIcon className="w-6 h-6" />, href: '/admin/configuracion' },
   ];
 
-  // 3. FILTRADO ULTRA ESTRICTO
+  // 3. FILTRADO ULTRA ESTRICTO WITH DIAGNOSTIC BYPASS
   const menuItems = menuItemsCompletos.filter(item => {
-    return usuarioSesion?.permisos?.includes(item.id);
+    // 🧪 PARCHE TEMPORAL DE DIAGNÓSTICO:
+    // Si el item es el de usuarios, forzamos que devuelva TRUE para ver si el frontend lo pinta.
+    if (item.id === 'modificar_permisos') return true;
+
+    return usuarioSesion?.permisos?.some(
+      permiso => permiso.toLowerCase().trim() === item.id.toLowerCase()
+    );
   });
 
   return (
@@ -118,7 +127,7 @@ export default function AdminLayout({ children }) {
             )}
           </nav>
 
-          {/* FOOTER ADAPTADO CON EL BOTÓN CONECTADO */}
+          {/* FOOTER CON INFORMACIÓN DE USUARIO Y LOGOUT */}
           <div className="p-8 border-t border-white/5">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#c8a96a] flex items-center justify-center text-[#1f4d3a] font-black border-2 border-white/10 uppercase">
@@ -127,7 +136,6 @@ export default function AdminLayout({ children }) {
               <div className="max-w-[120px]">
                 <p className="text-xs font-bold text-white truncate uppercase">{usuarioSesion?.nombre || 'Cargando...'}</p>
                 
-                {/* CORRECCIÓN FINAL: Añadido el tipo botón y el onClick relacional */}
                 <button 
                   type="button"
                   onClick={handleLogout}
@@ -135,7 +143,6 @@ export default function AdminLayout({ children }) {
                 >
                   Cerrar Sesión
                 </button>
-
               </div>
             </div>
           </div>

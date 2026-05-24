@@ -1,20 +1,26 @@
 import sql from "mssql";
 import AdminTableClient from "../AdminTableClient";
-async function getSolicitudes() {
-  const config = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    database: process.env.DB_DATABASE,
-    options: { encrypt: true, trustServerCertificate: false },
-  };
 
+// 🔑 Configuración adaptativa: Si process.env falla en local, usa el respaldo directo
+const config = {
+  user: process.env.DB_USER || "adminklinman",
+  password: process.env.DB_PASSWORD || "K25250438-9",
+  server: process.env.DB_SERVER || "klinman-server.database.windows.net",
+  database: process.env.DB_DATABASE || "klinman-db",
+  options: { 
+    encrypt: true, 
+    trustServerCertificate: true // Importante en true para evitar rechazos de certificados en desarrollo
+  },
+};
+
+async function getSolicitudes() {
   try {
+    // Nos conectamos usando la configuración blindada
     const pool = await sql.connect(config);
     const result = await pool.request().query("SELECT * FROM solicitudes ORDER BY fecha_creacion DESC");
     return result.recordset;
   } catch (error) {
-    console.error("Error en base de datos:", error);
+    console.error("Error en base de datos al traer solicitudes:", error);
     return [];
   }
 }

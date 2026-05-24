@@ -6,14 +6,12 @@ import StatusBadge from "../../components/StatusBadge.jsx";
 import EstadoSelect from "../../components/EstadoSelect.jsx";
 import PrioridadSelect from "../../components/PrioridadSelect.jsx"; 
 
-// Badge de prioridad: Mantiene el tamaño 10px y la estética Klinman
 function PriorityBadge({ prioridad }) {
   const styles = {
     Alta: "bg-[#991b1b] text-white", 
     Media: "bg-[#c8a96a] text-white",
     Baja: "bg-[#4a5568] text-white",
   };
-
   return (
     <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase shadow-sm ${styles[prioridad] || "bg-gray-500 text-white"}`}>
       {prioridad}
@@ -21,8 +19,7 @@ function PriorityBadge({ prioridad }) {
   );
 }
 
-// 🔑 AGREGAMOS "permisos = []" EN LOS PROPS DEL COMPONENTE
-export default function AdminTableClient({ solicitudesIniciales, permisos = [] }) {
+export default function AdminTableClient({ solicitudesIniciales }) {
   const [busqueda, setBusqueda] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState("todos");
   const [servicioFiltro, setServicioFiltro] = useState("todos");
@@ -33,6 +30,26 @@ export default function AdminTableClient({ solicitudesIniciales, permisos = [] }
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+
+  // 🔑 NUEVO ESTADO LOCAL PARA COMPROBAR PERMISOS EN TIEMPO REAL
+  const [permisos, setPermisos] = useState([]);
+
+  useEffect(() => {
+    // Consultamos directo a la API de sesión que ya arreglamos y lee perfecto a Evelyn
+    const traerPermisosSeguros = async () => {
+      try {
+        const res = await fetch('/api/session');
+        const data = await res.json();
+        if (data.user?.permisos) {
+          // Guardamos los permisos limpios en minúsculas
+          setPermisos(data.user.permisos.map(p => p.toLowerCase().trim()));
+        }
+      } catch (err) {
+        console.error("Error leyendo permisos en la tabla:", err);
+      }
+    };
+    traerPermisosSeguros();
+  }, []);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -190,7 +207,7 @@ export default function AdminTableClient({ solicitudesIniciales, permisos = [] }
                     <td className="p-5">
                       <div className="flex flex-col gap-2">
                         <PriorityBadge prioridad={s.prioridad} />
-                        {permisos.includes("cambiar prioridad") && (
+                        {permisos.includes("cambiar_prioridad") && (
                           <PrioridadSelect solicitudId={s.id} prioridadActual={s.prioridad} />
                         )}
                       </div>
@@ -204,7 +221,7 @@ export default function AdminTableClient({ solicitudesIniciales, permisos = [] }
                     <td className="p-5">
                       <div className="flex items-center gap-3">
                         <StatusBadge estado={s.estado} />
-                        {permisos.includes("cambiar estado") && (
+                        {permisos.includes("cambiar_estado") && (
                           <EstadoSelect solicitudId={s.id} estadoActual={s.estado} />
                         )}
                       </div>
