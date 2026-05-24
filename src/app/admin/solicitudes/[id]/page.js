@@ -62,7 +62,7 @@ export default async function SolicitudDetalle({ params }) {
         <div className="flex flex-col md:flex-row justify-between gap-6">
           <div>
             <span className="bg-[#c8a96a] text-[#1f4d3a] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 inline-block">
-              Ficha del Ticket • {solicitud.ticket || `#${solicitud.id}`}
+              Ficha del Ticket • {solicitud.codigo_ticket || `KLIN-${solicitud.id.toString().padStart(4, '0')}`}
             </span>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">{solicitud.nombre}</h1>
             <p className="text-white/70 text-lg font-medium">{solicitud.empresa || "Cliente Particular"}</p>

@@ -6,11 +6,11 @@ import nodemailer from 'nodemailer';
 const config = {
   user: process.env.DB_USER || 'adminklinman',
   password: process.env.DB_PASSWORD || 'K25250438-9',
-  server: process.env.DB_SERVER || 'klinman-server.database.windows.net',
+  server: process.env.DB_SERVER || 'klinman-server.database.windows.net,1433',
   database: process.env.DB_DATABASE || 'klinman-db',
   options: {
     encrypt: true,
-    trustServerCertificate: false // Recomendado para Azure SQL
+    trustServerCertificate: true // Cambiado a true para producción en Vercel
   },
 };
 

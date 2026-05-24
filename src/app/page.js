@@ -1,14 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
-import { UserIcon } from "@heroicons/react/24/outline";
+import { UserIcon, ChevronDownIcon, ArrowRightOnRectangleIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
-  // ESTADO NUEVO: Para capturar el ticket y renderizar la confirmación premium
   const [ticketCreado, setTicketCreado] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  // ESTADO NUEVO: Control interactivo y animado del menú desplegable
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const menuRef = useRef(null);
+
+  // Cerrar el menú si se hace clic fuera de él (Mejora de UX)
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuAbierto(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +30,6 @@ export default function Home() {
     setLoading(true);
 
     const form = e.target;
-
     const data = {
       nombre: form.nombre.value,
       empresa: form.empresa.value,
@@ -27,7 +40,6 @@ export default function Home() {
     };
 
     try {
-      // Apuntamos a la nueva API centralizada de cotizaciones/solicitudes
       const res = await fetch('/api/contacto', {
         method: 'POST',
         headers: {
@@ -39,7 +51,6 @@ export default function Home() {
       const result = await res.json();
 
       if (result.success) {
-        // Guardamos el ticket (Ej: KLIN-0014) en el estado para cambiar la interfaz temporalmente
         setTicketCreado(result.codigo_ticket);
         
         toast.success(
@@ -128,18 +139,52 @@ export default function Home() {
         </ul>
 
         <div className="flex items-center gap-4">
-          <div className="relative group">
-            <button className="p-3.5 border-2 border-[#ece7dc] text-[#1f4d3a] hover:border-[#1f4d3a] hover:bg-[#faf8f3] rounded-2xl transition-all flex items-center justify-center">
-              <UserIcon className="w-5 h-5" />
+          
+          {/* MENÚ DESPLEGABLE PREMIUM OPTIMIZADO */}
+          <div className="relative" ref={menuRef}>
+            <button 
+              onClick={() => setMenuAbierto(!menuAbierto)}
+              className={`px-4 py-3.5 border-2 rounded-2xl transition-all flex items-center gap-2 font-black text-[10px] tracking-widest uppercase ${
+                menuAbierto 
+                  ? 'border-[#1f4d3a] bg-[#faf8f3] text-[#c8a96a]' 
+                  : 'border-[#ece7dc] text-[#1f4d3a] hover:border-[#1f4d3a] hover:bg-[#faf8f3]'
+              }`}
+            >
+              <UserIcon className="w-4 h-4" />
+              <span>Accesos</span>
+              <ChevronDownIcon className={`w-3 h-3 transition-transform duration-300 ${menuAbierto ? 'rotate-180 text-[#c8a96a]' : 'text-[#1f4d3a]'}`} />
             </button>
             
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl hidden group-hover:block border border-[#1f4d3a]/10 z-[60]">
-              <Link href="/admin/login" className="block px-6 py-4 text-[#1f4d3a] hover:bg-[#f8f5ef] font-black text-[10px] uppercase tracking-widest">
-                Colaboradores
+            {/* Contenedor Animado con Estética Klinman */}
+            <div className={`absolute right-0 mt-3 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-[#1f4d3a]/10 z-[60] overflow-hidden transition-all duration-300 origin-top-right ${
+              menuAbierto 
+                ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' 
+                : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+            }`}>
+              <div className="bg-[#f8f5ef] px-5 py-3 border-b border-[#ece7dc]">
+                <p className="text-[9px] font-black tracking-widest text-[#1f4d3a]/60 uppercase">Portales del Sistema</p>
+              </div>
+
+              <Link 
+                href="/admin/login" 
+                onClick={() => setMenuAbierto(false)}
+                className="flex items-center gap-3 px-5 py-4 text-[#1f4d3a] hover:bg-[#f8f5ef] font-black text-[10px] uppercase tracking-widest border-b border-[#f1ede4]/60 transition-colors group"
+              >
+                <ArrowRightOnRectangleIcon className="w-4 h-4 text-gray-400 group-hover:text-[#c8a96a] transition-colors" />
+                <span className="group-hover:text-[#c8a96a] transition-colors">Colaboradores</span>
               </Link>
-              <Link href="/portal/acceso" className="block px-6 py-4 text-[#1f4d3a] hover:bg-[#f8f5ef] font-black text-[10px] uppercase tracking-widest border-t border-[#f8f5ef]">
-                Portal Clientes
+
+              {/* RUTA RECORREGIDA: Apuntando exactamente a /portalClientes */}
+              <Link 
+                href="/portalClientes" 
+                onClick={() => setMenuAbierto(false)}
+                className="flex items-center gap-3 px-5 py-4 text-[#1f4d3a] hover:bg-[#f8f5ef] font-black text-[10px] uppercase tracking-widest transition-colors group"
+              >
+                <ComputerDesktopIcon className="w-4 h-4 text-gray-400 group-hover:text-[#1f4d3a] transition-colors" />
+                <span className="group-hover:underline decoration-[#c8a96a] decoration-2">Portal Clientes</span>
               </Link>
+              
+              <div className="h-1 bg-gradient-to-r from-[#1f4d3a] via-[#c8a96a] to-[#1f4d3a]"></div>
             </div>
           </div>
 
@@ -241,7 +286,6 @@ export default function Home() {
             <p className="text-gray-400 font-black uppercase text-[10px] tracking-[0.3em] mt-3">Inicie el alta operaria de sus activos</p>
           </div>
 
-          {/* RENDERIZADO CONDICIONAL: Si ya se creó un ticket con éxito, muestra la tarjeta premium */}
           {ticketCreado ? (
             <div className="p-8 bg-[#f8f5ef] border-2 border-dashed border-[#c8a96a] rounded-[2.5rem] text-center max-w-2xl mx-auto py-12 transition-all">
               <div className="w-16 h-16 bg-[#1f4d3a] text-white rounded-full flex items-center justify-center mx-auto text-xl font-black mb-4">✓</div>

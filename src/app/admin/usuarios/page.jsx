@@ -255,7 +255,7 @@ export default function GestionAccesosKlinman() {
             </div>
             <h3 className="text-2xl font-black tracking-tighter uppercase mb-4 text-[#1f4d3a]">CONFIRMAR BAJA DE USUARIO</h3>
             <p className="text-xs font-medium text-gray-500 leading-relaxed max-w-sm mx-auto mb-10 uppercase">
-              ¿Está seguro de dar de baja al usuario? <span className="font-black text-[#1f4d3a] block my-1 text-sm">{userActivo.nombre}</span>? Se eliminará del panel de usuarios.
+              ¿Está seguro de dar de baja al usuario? <span className="font-black text-[#1f4d3a] block my-1 text-sm">{userActivo.nombre}</span>Se eliminará del panel de usuarios.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <button type="button" onClick={() => setModalBaja(false)} className="bg-[#f8f5ef] text-[#1f4d3a] py-5 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em]">CANCELAR</button>

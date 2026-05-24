@@ -19,7 +19,7 @@ function PriorityBadge({ prioridad }) {
   );
 }
 
-export default function AdminTableClient({ solicitudesIniciales }) {
+export default function AdminTableClient({ solicitudesIniciales = [] }) { // Prevenimos undefined
   const [busqueda, setBusqueda] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState("todos");
   const [servicioFiltro, setServicioFiltro] = useState("todos");
@@ -31,17 +31,14 @@ export default function AdminTableClient({ solicitudesIniciales }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // 🔑 NUEVO ESTADO LOCAL PARA COMPROBAR PERMISOS EN TIEMPO REAL
   const [permisos, setPermisos] = useState([]);
 
   useEffect(() => {
-    // Consultamos directo a la API de sesión que ya arreglamos y lee perfecto a Evelyn
     const traerPermisosSeguros = async () => {
       try {
         const res = await fetch('/api/session');
         const data = await res.json();
         if (data.user?.permisos) {
-          // Guardamos los permisos limpios en minúsculas
           setPermisos(data.user.permisos.map(p => p.toLowerCase().trim()));
         }
       } catch (err) {
@@ -55,7 +52,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
     setCurrentPage(1);
   }, [busqueda, estadoFiltro, servicioFiltro, prioridadFiltro, fechaDesde, fechaHasta]);
 
-  // 1. Lógica de filtrado combinada
+  // 1. Lógica de filtrado combinada (CORREGIDA PARA EVITAR DESFASES)
   const solicitudesFiltradas = solicitudesIniciales.filter((s) => {
     const cumpleTexto = 
       s.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -73,12 +70,14 @@ export default function AdminTableClient({ solicitudesIniciales }) {
       prioridadFiltro === "todos" || 
       s.prioridad === prioridadFiltro;
 
-    const fechaSolicitud = new Date(s.fecha_creacion);
-    const inicio = fechaDesde ? new Date(fechaDesde + "T00:00:00") : null;
-    const fin = fechaHasta ? new Date(fechaHasta + "T23:59:59") : null;
+    // CORRECCIÓN DE FECHAS: Extraemos solo la parte YYYY-MM-DD para comparar limpiamente de forma local
+    if (!s.fecha_creacion) return !fechaDesde && !fechaHasta;
+    
+    const fechaFormateada = new Date(s.fecha_creacion).toISOString().split('T')[0];
 
-    const cumpleFecha = (!inicio || fechaSolicitud >= inicio) && 
-                        (!fin || fechaSolicitud <= fin);
+    const cumpleFecha = 
+      (!fechaDesde || fechaFormateada >= fechaDesde) && 
+      (!fechaHasta || fechaFormateada <= fechaHasta);
 
     return cumpleTexto && cumpleEstado && cumpleServicio && cumplePrioridad && cumpleFecha;
   });
@@ -93,7 +92,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
   const stats = solicitudesIniciales.reduce((acc, s) => {
     const estado = s.estado?.trim().toLowerCase();
     if (estado === "pendiente") acc.pendientes++;
-    else if (estado === "en revisión") acc.revision++;
+    else if (estado === "en revisión" || estado === "en revision") acc.revision++;
     else if (estado === "finalizado") acc.finalizadas++;
     return acc;
   }, { pendientes: 0, revision: 0, finalizadas: 0 });
@@ -201,9 +200,8 @@ export default function AdminTableClient({ solicitudesIniciales }) {
               {currentItems.length > 0 ? (
                 currentItems.map((s) => (
                   <tr key={s.id} className="border-b border-[#f1ede4] hover:bg-[#faf8f3] transition">
-                    <td className="p-5 font-semibold font-mono text-[#c8a96a]">{s.ticket}</td>
+                    <td className="p-5 font-semibold font-mono text-[#c8a96a]">{s.codigo_ticket || `KLIN-${s.id.toString().padStart(4, '0')}`}</td>
                     
-                    {/* 🔒 CANDADO PARA PRIORIDAD */}
                     <td className="p-5">
                       <div className="flex flex-col gap-2">
                         <PriorityBadge prioridad={s.prioridad} />
@@ -217,7 +215,6 @@ export default function AdminTableClient({ solicitudesIniciales }) {
                     <td className="p-5 text-gray-600">{s.empresa}</td>
                     <td className="p-5 text-gray-600">{s.servicio}</td>
                     
-                    {/* 🔒 CANDADO PARA ESTADO */}
                     <td className="p-5">
                       <div className="flex items-center gap-3">
                         <StatusBadge estado={s.estado} />
@@ -228,7 +225,7 @@ export default function AdminTableClient({ solicitudesIniciales }) {
                     </td>
 
                     <td className="p-5 text-gray-500 whitespace-nowrap text-sm font-mono">
-                      {new Date(s.fecha_creacion).toLocaleDateString("es-CL")}
+                      {new Date(s.fecha_creacion).toLocaleDateString("es-CL", { timeZone: "UTC" })}
                     </td>
                     <td className="p-5 text-right">
                       <Link 

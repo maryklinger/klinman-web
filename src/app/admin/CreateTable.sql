@@ -15,6 +15,7 @@ CREATE TABLE solicitudes (
     fecha_creacion DATETIME DEFAULT GETDATE()
 );
 
+
 -- Añadimos las columnas de relación
 ALTER TABLE solicitudes ADD empresa_id INT NULL;
 ALTER TABLE solicitudes ADD servicio_id INT NULL;
@@ -122,7 +123,9 @@ CREATE TABLE usuarios (
 
 );
 
-SELECT * FROM usuarios;
+--se agrega nueva columna para vincular con gmail
+ALTER TABLE usuarios ADD google_id NVARCHAR(255) NULL;
+
 
 
 
@@ -194,7 +197,27 @@ INSERT INTO permisos (clave_permiso, descripcion) VALUES
 ('admin_users', 'Gestionar Usuarios y Configuración');
 
 
+-- TABLA DE FEEDBACK / CALIFICACIONES
+CREATE TABLE feedback_servicios (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    ticket_id INT NOT NULL,               -- Vinculado a solicitudes(id)
+    calificacion INT NOT NULL,            -- 1 a 5 estrellas
+    comentario NVARCHAR(MAX),             -- Comentarios detallados
+    fecha_registro DATETIME DEFAULT GETDATE(),
+    
+    -- Restricción para asegurar integridad
+    CONSTRAINT FK_Feedback_Ticket FOREIGN KEY (ticket_id) REFERENCES solicitudes(id)
+);
 
+
+
+CREATE TABLE bitacora_ticket (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    ticket_id INT NOT NULL,
+    mensaje_actualizacion NVARCHAR(MAX),
+    fecha_registro DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (ticket_id) REFERENCES solicitudes(id)
+);
 
 
 
@@ -204,13 +227,11 @@ SELECT * FROM permisos;
 
 SELECT * FROM usuarios;
 
+DELETE FROM solicitudes;
+
+SELECT * FROM solicitudes;
 
 
-
--- Para ELIMINAR los registros 
-DELETE FROM rol_permisos;
-DELETE FROM permisos;
-
-DELETE usuarios
-
-WHERE estado = 0;
+--para resetear el contador de solicitudes
+DELETE FROM solicitudes;
+DBCC CHECKIDENT ('solicitudes', RESEED, 0);
