@@ -21,14 +21,29 @@ export default function DashboardAdmin({
   const [modalAsignar, setModalAsignar] = useState(false);
   const [cargandoAsignacion, setCargandoAsignacion] = useState(false);
 
-  // FILTRADO DE OPERADORES: Basado exactamente en la definición de tu tabla SQL
+
+
+
+
+
+  
+  // 1. FILTRADO DE OPERADORES: USANDO LOGICA DE COMPARACIÓN SEGURA
   const listaOperadores = usuariosIniciales.filter(u => {
-    const esOperador = u.rol_id === 2;
-    // Manejo de la columna 'estado BIT': en Node/SQL Server puede retornar como boolean o numérico
-    const esActivo = u.estado === true || u.estado === 1 || String(u.estado) === "1";
-    return esOperador && esActivo;
+    // Si no existen los campos, devolvemos false inmediatamente
+    if (u.rol_id === undefined || u.estado === undefined) return false;
+    
+    // Convertimos a números para comparar
+    const esOperador = Number(u.rol_id) === 2;
+    const estaActivo = Number(u.estado) === 1;
+    
+    return esOperador && estaActivo;
   });
 
+  // LOG DE CONTROL (Revisa la consola F12)
+  console.log("Usuarios Totales Recibidos:", usuariosIniciales);
+  console.log("Operadores Filtrados:", listaOperadores);
+
+  
   // 2. PROCESAMIENTO DE ESTADÍSTICAS EN TIEMPO REAL
   const conteo = solicitudes.reduce((acc, s) => {
     const estado = s.estado ? String(s.estado).toLowerCase().trim() : "";

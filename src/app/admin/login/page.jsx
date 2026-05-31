@@ -28,7 +28,7 @@ export default function AdminLogin() {
 
           <div className="pt-8">
             <button
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+              onClick={() => signIn("google", { callbackUrl: "/admin" })}
               className="w-full bg-[#1f4d3a] text-white font-black text-xs tracking-widest py-5 rounded-2xl border border-[#c8a96a]/20 hover:bg-[#16382b] transition-all flex items-center justify-center gap-3 uppercase shadow-lg shadow-emerald-900/10"
             >
               Ingresar con cuenta Klinman

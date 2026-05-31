@@ -1,81 +1,64 @@
 export const dynamic = 'force-dynamic';
 
-import sql from "mssql";
+import { getServerSession } from "next-auth";
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers'; 
+import sql from "mssql";
 
-// 🔑 Configuración blindada con credenciales de respaldo para Vercel
+// IMPORTANTE: Definimos la configuración básica aquí para getServerSession
+// Esto evita tener que importar el handler desde otro archivo
+const authOptions = {
+  providers: [], 
+  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async session({ session, token }) {
+      session.user.id = token.userId;
+      return session;
+    }
+  }
+};
+
 const config = {
-  user: process.env.DB_USER || "adminklinman",
-  password: process.env.DB_PASSWORD || "K25250438-9",
-  server: process.env.DB_SERVER || "klinman-server.database.windows.net",
-  database: process.env.DB_DATABASE || "klinman-db",
-  options: {
-    encrypt: true,
-    trustServerCertificate: true,
-  },
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER,
+  database: process.env.DB_DATABASE,
+  options: { encrypt: true, trustServerCertificate: true },
 };
 
 export async function GET(request) {
   try {
-    const cookieStore = await cookies();
-    const cookieUsuario = cookieStore.get('user_id')?.value; 
-
-    if (!cookieUsuario) {
-      return NextResponse.json({ user: null, message: "No hay sesión activa" });
+    // 1. Obtener la sesión usando la configuración local
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ user: null, message: "No hay sesión activa" }, { status: 401 });
     }
 
+    // 2. Consultar base de datos
     const pool = await sql.connect(config);
-    
-    // ⚡ CONSULTA MEJORADA: Busca permisos directos Y permisos heredados por el ROL
     const result = await pool.request()
-      .input("usuarioId", sql.Int, parseInt(cookieUsuario))
+      .input("usuarioId", sql.Int, parseInt(session.user.id))
       .query(`
-        SELECT DISTINCT
-          u.id, 
-          u.nombre, 
-          u.email, 
-          u.rol_id, 
-          p.clave_permiso
+        SELECT u.id, u.nombre, u.email, u.rol_id, 
+               COALESCE(p1.clave_permiso, p2.clave_permiso) AS clave_permiso
         FROM usuarios u
-        -- 1. Permisos heredados por el ROL del usuario
         LEFT JOIN rol_permisos rp ON u.rol_id = rp.rol_id
         LEFT JOIN permisos p1 ON rp.permiso_id = p1.id
-        -- 2. Permisos asignados directamente al USUARIO
         LEFT JOIN usuario_permisos up ON u.id = up.usuario_id
         LEFT JOIN permisos p2 ON up.permiso_id = p2.id
-        -- Consolidamos ambos permisos en una sola columna
-        CROSS APPLY (SELECT COALESCE(p1.clave_permiso, p2.clave_permiso) AS clave_permiso) p
         WHERE u.id = @usuarioId AND u.estado = 1
       `);
 
-    if (result.recordset.length === 0) {
-      return NextResponse.json({ user: null, error: "Usuario no encontrado" });
-    }
+    if (result.recordset.length === 0) return NextResponse.json({ user: null }, { status: 404 });
 
-    const filas = result.recordset;
-    
-    // Filtramos y limpiamos el arreglo asegurando que no vayan duplicados
-    const listaPermisos = Array.from(
-      new Set(
-        filas
-          .filter(row => row.clave_permiso)
-          .map(row => row.clave_permiso.toLowerCase().trim())
-      )
-    );
-
-    const usuarioLogueadoActivo = {
-      id: filas[0].id,
-      nombre: filas[0].nombre,
-      email: filas[0].email,
-      rol_id: filas[0].rol_id,
-      permisos: listaPermisos
-    };
-
-    return NextResponse.json({ user: usuarioLogueadoActivo });
-
+    return NextResponse.json({ 
+      user: {
+        id: result.recordset[0].id,
+        nombre: result.recordset[0].nombre,
+        permisos: [...new Set(result.recordset.map(r => r.clave_permiso).filter(Boolean).map(p => p.toLowerCase().trim()))]
+      }
+    });
   } catch (error) {
-    console.error("Error en la API de sesión:", error);
-    return NextResponse.json({ user: null, error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

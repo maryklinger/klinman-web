@@ -219,6 +219,8 @@ CREATE TABLE bitacora_ticket (
     FOREIGN KEY (ticket_id) REFERENCES solicitudes(id)
 );
 
+ALTER TABLE solicitudes ADD operador_id INT NULL;
+
 
 
 SELECT * FROM rol_permisos;
@@ -227,7 +229,13 @@ SELECT * FROM permisos;
 
 SELECT * FROM usuarios;
 
+SELECT * FROM usuario_permisos;
+
+
+
 DELETE FROM solicitudes;
+
+
 
 SELECT * FROM solicitudes;
 
