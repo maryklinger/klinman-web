@@ -6,15 +6,17 @@ const config = {
   server: process.env.DB_SERVER,
   database: process.env.DB_DATABASE,
   options: {
-    encrypt: true,
-    trustServerCertificate: true,
+    encrypt: true, // Requerido para Azure
+    trustServerCertificate: false, // Mejor seguridad
   },
 };
 
 let poolPromise;
 
+// Patrón Singleton para reutilizar la conexión
 if (!global._sqlPoolPromise) {
-  global._sqlPoolPromise = sql.connect(config)
+  global._sqlPoolPromise = new sql.ConnectionPool(config)
+    .connect()
     .then(pool => {
       console.log('Pool de SQL Server conectado globalmente');
       return pool;
@@ -31,4 +33,5 @@ poolPromise = global._sqlPoolPromise;
 export async function getDBConnection() {
   return poolPromise;
 }
+
 export { sql };

@@ -1,17 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import sql from "mssql";
-
-const dbConfig = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
-  options: {
-    encrypt: true,
-    trustServerCertificate: true,
-  },
-};
+import { getDBConnection, sql } from "@/lib/db"; // Importación correcta
 
 const handler = NextAuth({
   providers: [
@@ -21,15 +10,16 @@ const handler = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt", // Necesario para que el ID persista en el token
+    strategy: "jwt",
   },
   callbacks: {
     async signIn({ profile }) {
       if (!profile?.email) return false;
+      // Filtro de seguridad por dominio
       if (!profile.email.toLowerCase().endsWith("@klinman.com")) return false;
 
       try {
-        const pool = await sql.connect(dbConfig);
+        const pool = await getDBConnection(); // Reutiliza la conexión
         const result = await pool.request()
           .input("email", sql.VarChar, profile.email)
           .query("SELECT id FROM usuarios WHERE LOWER(email) = LOWER(@email) AND estado = 1");
@@ -41,10 +31,9 @@ const handler = NextAuth({
       }
     },
     async jwt({ token, profile }) {
-      // Si es el primer inicio de sesión, buscamos el ID y lo guardamos en el token
       if (profile?.email) {
         try {
-          const pool = await sql.connect(dbConfig);
+          const pool = await getDBConnection();
           const result = await pool.request()
             .input("email", sql.VarChar, profile.email)
             .query("SELECT id FROM usuarios WHERE LOWER(email) = LOWER(@email)");
@@ -59,7 +48,6 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      // Pasamos el ID del token a la sesión
       if (token.userId) {
         session.user.id = token.userId;
       }
