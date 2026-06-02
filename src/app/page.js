@@ -220,7 +220,7 @@ export default function Home() {
       <section id="servicios" className="py-32 px-8 bg-[#f8f5ef]">
         <div className="max-w-7xl mx-auto">
           <div className="mb-20 text-center md:text-left">
-            <h2 className="text-4xl font-black text-[#1f4d3a] tracking-[-0.04em] uppercase">SERVICIOS DE CARTERA</h2>
+            <h2 className="text-4xl font-black text-[#1f4d3a] tracking-[-0.04em] uppercase">SERVICIOS</h2>
             <p className="text-gray-400 font-black uppercase text-[11px] tracking-[0.3em] mt-3">Soluciones técnicas de precisión operativa</p>
           </div>
           <div className="grid lg:grid-cols-3 gap-12">
@@ -380,7 +380,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-4">
             <img src="/klinman_logo.png" className="w-8 h-8 object-cover" alt="Klinman Logo" />
-            <span className="text-sm font-black tracking-[0.3em] text-[#1f4d3a]">KLINMAN S.A.</span>
+            <span className="text-sm font-black tracking-[0.3em] text-[#1f4d3a]">KLINMAN SPA.</span>
           </div>
           <div className="text-[11px] font-black tracking-widest text-gray-400 uppercase font-mono">Morandé 776, Santiago — Chile</div>
           <div className="flex gap-6 text-[11px] font-black tracking-wider text-gray-400 uppercase">
