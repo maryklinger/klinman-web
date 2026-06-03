@@ -7,7 +7,7 @@ const config = {
   database: process.env.DB_DATABASE,
   options: {
     encrypt: true, // Requerido para Azure
-    trustServerCertificate: false, // Mejor seguridad
+    trustServerCertificate: true, // Mejor seguridad
   },
 };
 
