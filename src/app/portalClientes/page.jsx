@@ -100,6 +100,8 @@ export default function PortalClientesPage() {
                 <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
                   resultado.estado === 'pendiente' ? 'bg-[#fef3c7] text-[#b45309]' : 
                   resultado.estado === 'en proceso' ? 'bg-[#dbeafe] text-[#1d4ed8]' : 'bg-[#d1fae5] text-[#065f46]'
+                  
+
                 }`}>
                   {resultado.estado}
                 </span>

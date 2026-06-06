@@ -220,6 +220,11 @@ CREATE TABLE bitacora_ticket (
 );
 
 ALTER TABLE solicitudes ADD operador_id INT NULL;
+-- Asegurar la relación (FK)
+ALTER TABLE solicitudes 
+ADD CONSTRAINT FK_Solicitud_Operador 
+FOREIGN KEY (operador_id) REFERENCES usuarios(id);
+
 
 
 

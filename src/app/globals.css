@@ -29,3 +29,10 @@ html {
   scroll-behavior: smooth;
 }
 
+@layer base {
+  body {
+    background-color: #faf9f6; /* Un tono crema muy suave que da profundidad */
+    background-image: radial-gradient(circle at 50% 0%, #f1ede4 0%, #faf9f6 70%);
+    background-attachment: fixed;
+  }
+}
