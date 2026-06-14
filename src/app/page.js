@@ -476,7 +476,7 @@ export default function Home() {
                   className="w-full bg-[#f8f5ef] border border-transparent focus:border-[#c8a96a] p-5 rounded-2xl outline-none font-black uppercase text-xs tracking-wider text-[#1f4d3a] appearance-none transition-all"
                   required
                 >
-                  <option value="" className="text-gray-400">TIPO DE SERVICIO REQUERIDO</option>
+                  <option value="" className="text-gray-400">SERVICIO REQUERIDO</option>
                   <option value="Limpieza Corporativa">LIMPIEZA CORPORATIVA</option>
                   <option value="Mantenimiento Técnico">MANTENIMIENTO TÉCNICO</option>
                   <option value="Servicios Especializados">SERVICIOS ESPECIALIZADOS</option>
