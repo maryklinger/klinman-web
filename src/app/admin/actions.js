@@ -1,109 +1,75 @@
 'use server';
 
-import sql from "mssql";
+import sql from "@/lib/db";
 import { revalidatePath } from "next/cache";
-
-const config = {
-  user: process.env.DB_USER || "",
-  password: process.env.DB_PASSWORD || "",
-  server: process.env.DB_SERVER || "",
-  database: process.env.DB_DATABASE || "",
-  options: { encrypt: true, trustServerCertificate: true },
-};
-
-let globalPool = null;
-async function getPool() {
-  if (!globalPool) globalPool = await sql.connect(config);
-  return globalPool;
-}
 
 // ==========================================
 // 1. FUNCIONES DE USUARIOS Y SOLICITUDES
 // ==========================================
 
 export async function actualizarEstado(id, nuevoEstado) {
-  const pool = await getPool();
-  await pool.request().input("id", sql.Int, id).input("estado", sql.NVarChar, nuevoEstado)
-      .query("UPDATE solicitudes SET estado = @estado WHERE id = @id");
+  await sql`UPDATE solicitudes SET estado = ${nuevoEstado} WHERE id = ${id}`;
   revalidatePath("/admin");
   return { success: true };
 }
 
 export async function actualizarPrioridad(id, nuevaPrioridad) {
-  const pool = await getPool();
-  await pool.request().input("id", sql.Int, id).input("prioridad", sql.NVarChar, nuevaPrioridad)
-      .query("UPDATE solicitudes SET prioridad = @prioridad WHERE id = @id");
+  await sql`UPDATE solicitudes SET prioridad = ${nuevaPrioridad} WHERE id = ${id}`;
   revalidatePath("/admin");
   return { success: true };
 }
 
 export async function actualizarUsuarioAction(id, datos) {
-  const pool = await getPool();
-  await pool.request().input("id", sql.Int, id).input("nombre", sql.NVarChar, datos.nombre)
-      .input("email", sql.NVarChar, datos.email).input("rol_id", sql.Int, datos.rol_id)
-      .query("UPDATE usuarios SET nombre = @nombre, email = @email, rol_id = @rol_id WHERE id = @id");
+  await sql`UPDATE usuarios SET nombre = ${datos.nombre}, email = ${datos.email}, rol_id = ${datos.rol_id} WHERE id = ${id}`;
   revalidatePath("/admin/usuarios");
   return { success: true };
 }
 
-export async function cambiarEstadoUsuarioAction(id, nuevoEstadoBit) {
-  const pool = await getPool();
-  await pool.request().input("id", sql.Int, id).input("estado", sql.Bit, nuevoEstadoBit)
-      .query("UPDATE usuarios SET estado = @estado WHERE id = @id");
+export async function cambiarEstadoUsuarioAction(id, nuevoEstadoBool) {
+  await sql`UPDATE usuarios SET estado = ${nuevoEstadoBool} WHERE id = ${id}`;
   revalidatePath("/admin/usuarios");
   return { success: true };
 }
 
 export async function crearUsuarioAction(datos) {
-  const pool = await getPool();
-  const checkEmail = await pool.request().input("email", sql.NVarChar, datos.email)
-      .query("SELECT id FROM usuarios WHERE email = @email");
-  if (checkEmail.recordset.length > 0) return { success: false, error: "EL EMAIL YA ESTÁ REGISTRADO" };
+  const checkEmail = await sql`SELECT id FROM usuarios WHERE email = ${datos.email}`;
+  if (checkEmail.length > 0) return { success: false, error: "EL EMAIL YA ESTÁ REGISTRADO" };
 
-  await pool.request().input("nombre", sql.NVarChar, datos.nombre).input("email", sql.NVarChar, datos.email)
-      .input("rol_id", sql.Int, datos.rol_id).input("estado", sql.Bit, 1).input("password_hash", sql.NVarChar, "KLINMAN_2026")
-      .query("INSERT INTO usuarios (nombre, email, rol_id, estado, password_hash) VALUES (@nombre, @email, @rol_id, @estado, @password_hash)");
+  await sql`
+    INSERT INTO usuarios (nombre, email, rol_id, estado, password_hash) 
+    VALUES (${datos.nombre}, ${datos.email}, ${datos.rol_id}, TRUE, 'KLINMAN_2026')
+  `;
   revalidatePath("/admin/usuarios");
   return { success: true };
 }
 
 // ==========================================
-// 2. GESTIÓN DE PERMISOS (ROL Y USUARIO)
+// 2. GESTIÓN DE PERMISOS
 // ==========================================
 
-
-
-
-
 export async function actualizarPermisosRolAction(rolId, arrayPermisosCortos) {
-  const pool = await getPool();
-  const transaction = new sql.Transaction(pool);
-  await transaction.begin();
   try {
-    await new sql.Request(transaction).input("rol_id", sql.Int, rolId).query("DELETE FROM rol_permisos WHERE rol_id = @rol_id");
-    for (const codigo of arrayPermisosCortos) {
-      await new sql.Request(transaction).input("rol_id", sql.Int, rolId).input("codigo", sql.NVarChar, codigo)
-        .query("INSERT INTO rol_permisos (rol_id, permiso_id) SELECT @rol_id, id FROM permisos WHERE codigo = @codigo");
-    }
-    await transaction.commit();
+    await sql.begin(async (sql) => {
+      await sql`DELETE FROM rol_permisos WHERE rol_id = ${rolId}`;
+      for (const codigo of arrayPermisosCortos) {
+        await sql`INSERT INTO rol_permisos (rol_id, permiso_id) SELECT ${rolId}, id FROM permisos WHERE clave_permiso = ${codigo}`;
+      }
+    });
     return { success: true };
-  } catch (e) { await transaction.rollback(); throw e; }
+  } catch (e) { throw e; }
 }
 
 export async function actualizarPermisosUsuarioAction(usuarioId, arrayPermisosCortos) {
-  const pool = await getPool();
-  const transaction = new sql.Transaction(pool);
-  await transaction.begin();
   try {
-    await new sql.Request(transaction).input("u_id", sql.Int, usuarioId).query("DELETE FROM usuario_permisos WHERE usuario_id = @u_id");
-    for (const codigo of arrayPermisosCortos) {
-      await new sql.Request(transaction).input("u_id", sql.Int, usuarioId).input("codigo", sql.NVarChar, codigo)
-        .query("INSERT INTO usuario_permisos (usuario_id, permiso_id) SELECT @u_id, id FROM permisos WHERE codigo = @codigo");
-    }
-    await transaction.commit();
+    await sql.begin(async (sql) => {
+      await sql`DELETE FROM usuario_permisos WHERE usuario_id = ${usuarioId}`;
+      for (const codigo of arrayPermisosCortos) {
+        await sql`INSERT INTO usuario_permisos (usuario_id, permiso_id) SELECT ${usuarioId}, id FROM permisos WHERE clave_permiso = ${codigo}`;
+      }
+    });
     revalidatePath("/admin/usuarios");
     return { success: true };
-  } catch (e) { await transaction.rollback(); throw e; }
+  } catch (e) { throw e; }
 }
 
 // ==========================================
@@ -111,53 +77,35 @@ export async function actualizarPermisosUsuarioAction(usuarioId, arrayPermisosCo
 // ==========================================
 
 export async function loginUsuarioAction(email, password, perfil) {
-  const pool = await getPool();
-  const res = await pool.request().input("email", sql.NVarChar, email.trim().toUpperCase())
-      .query("SELECT id, nombre, rol_id, password_hash, estado FROM usuarios WHERE email = @email");
+  const res = await sql`SELECT id, nombre, rol_id, password_hash, estado FROM usuarios WHERE email = ${email.trim().toUpperCase()}`;
   
-  const usuario = res.recordset[0];
-  if (!usuario || !usuario.estado) return { success: false, error: "CREDENTIALES INVÁLIDAS" };
+  const usuario = res[0];
+  if (!usuario || !usuario.estado) return { success: false, error: "CREDENCIALES INVÁLIDAS" };
   
-  // (Lógica de password omitida por brevedad, mantén la tuya aquí)
-  
-  // CONSULTA UNIFICADA: ROL + PERMISOS ESPECÍFICOS DEL USUARIO
-  const resPermisos = await pool.request()
-    .input("rol_id", sql.Int, usuario.rol_id)
-    .input("u_id", sql.Int, usuario.id)
-    .query(`
-      SELECT codigo FROM permisos WHERE id IN (
-        SELECT permiso_id FROM rol_permisos WHERE rol_id = @rol_id
-        UNION
-        SELECT permiso_id FROM usuario_permisos WHERE usuario_id = @u_id
-      )
-    `);
+  // CONSULTA UNIFICADA: ROL + PERMISOS
+  const resPermisos = await sql`
+    SELECT clave_permiso FROM permisos WHERE id IN (
+      SELECT permiso_id FROM rol_permisos WHERE rol_id = ${usuario.rol_id}
+      UNION
+      SELECT permiso_id FROM usuario_permisos WHERE usuario_id = ${usuario.id}
+    )
+  `;
 
   return {
     success: true,
-    user: { ...usuario, permisos: resPermisos.recordset.map(r => r.codigo) }
+    user: { ...usuario, permisos: resPermisos.map(r => r.clave_permiso) }
   };
 }
 
 // ==========================================
-// 4. NUEVAS FUNCIONES PARA DASHBOARD Y BITÁCORA
+// 4. DASHBOARD Y BITÁCORA
 // ==========================================
 
 export async function asignarOperadorAction(ticketId, operadorId) {
-  const pool = await getPool();
   try {
-    // 1. Asignamos el operador al ticket
-    // Nota: Asegúrate de tener la columna 'operador_id' en tu tabla 'solicitudes'
-    await pool.request()
-      .input("ticketId", sql.Int, ticketId)
-      .input("operadorId", sql.Int, operadorId)
-      .query("UPDATE solicitudes SET operador_id = @operadorId, estado = 'En Revisión' WHERE id = @ticketId");
-
-    // 2. Registramos el movimiento en la bitácora automáticamente
-    await pool.request()
-      .input("ticketId", sql.Int, ticketId)
-      .input("msg", sql.NVarChar, `Ticket asignado a operador ID: ${operadorId}`)
-      .query("INSERT INTO bitacora_ticket (ticket_id, mensaje_actualizacion) VALUES (@ticketId, @msg)");
-
+    await sql`UPDATE solicitudes SET operador_id = ${operadorId}, estado = 'En Revisión' WHERE id = ${ticketId}`;
+    await sql`INSERT INTO bitacora_ticket (ticket_id, mensaje_actualizacion) VALUES (${ticketId}, ${'Ticket asignado a operador ID: ' + operadorId})`;
+    
     revalidatePath("/admin");
     return { success: true };
   } catch (error) {
@@ -166,13 +114,8 @@ export async function asignarOperadorAction(ticketId, operadorId) {
 }
 
 export async function registrarBitacoraAction(ticketId, mensaje) {
-  const pool = await getPool();
   try {
-    await pool.request()
-      .input("ticketId", sql.Int, ticketId)
-      .input("msg", sql.NVarChar, mensaje)
-      .query("INSERT INTO bitacora_ticket (ticket_id, mensaje_actualizacion) VALUES (@ticketId, @msg)");
-    
+    await sql`INSERT INTO bitacora_ticket (ticket_id, mensaje_actualizacion) VALUES (${ticketId}, ${mensaje})`;
     revalidatePath("/admin");
     return { success: true };
   } catch (error) {

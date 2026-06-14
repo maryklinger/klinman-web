@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { getDBConnection, sql } from "@/lib/db"; // Importación correcta
+import sql from "@/lib/db"; // Tu conector a Neon
 
 const handler = NextAuth({
   providers: [
@@ -15,34 +15,35 @@ const handler = NextAuth({
   callbacks: {
     async signIn({ profile }) {
       if (!profile?.email) return false;
+      
       // Filtro de seguridad por dominio
       if (!profile.email.toLowerCase().endsWith("@klinman.com")) return false;
 
       try {
-        const pool = await getDBConnection(); // Reutiliza la conexión
-        const result = await pool.request()
-          .input("email", sql.VarChar, profile.email)
-          .query("SELECT id FROM usuarios WHERE LOWER(email) = LOWER(@email) AND estado = 1");
+        // Consulta directa con Postgres
+        const result = await sql`
+          SELECT id FROM usuarios 
+          WHERE LOWER(email) = LOWER(${profile.email}) AND estado = TRUE
+        `;
 
-        return result.recordset.length > 0;
+        return result.length > 0;
       } catch (error) {
-        console.error("Error SQL en signIn:", error);
+        console.error("Error SQL en signIn (Neon):", error);
         return false;
       }
     },
     async jwt({ token, profile }) {
       if (profile?.email) {
         try {
-          const pool = await getDBConnection();
-          const result = await pool.request()
-            .input("email", sql.VarChar, profile.email)
-            .query("SELECT id FROM usuarios WHERE LOWER(email) = LOWER(@email)");
+          const result = await sql`
+            SELECT id FROM usuarios WHERE LOWER(email) = LOWER(${profile.email})
+          `;
           
-          if (result.recordset.length > 0) {
-            token.userId = result.recordset[0].id;
+          if (result.length > 0) {
+            token.userId = result[0].id;
           }
         } catch (error) {
-          console.error("Error en JWT callback:", error);
+          console.error("Error en JWT callback (Neon):", error);
         }
       }
       return token;

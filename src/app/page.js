@@ -272,7 +272,7 @@ export default function Home() {
       className="relative w-full min-h-[550px] md:h-[650px] flex items-center justify-center overflow-hidden"
     >
       <img
-        src="/fondoAlternativo.png"
+        src="/fondo_covert.jpg"
         className="absolute w-full h-full object-cover"
         alt="Klinman Cover"
       />

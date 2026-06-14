@@ -1,37 +1,16 @@
-import sql from 'mssql';
+// src/lib/db.js
+import postgres from 'postgres';
 
-const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
-  options: {
-    encrypt: true, // Requerido para Azure
-    trustServerCertificate: true, // Mejor seguridad
-  },
-};
+// Asegúrate de tener DATABASE_URL en tu .env.local
+const connectionString = process.env.DATABASE_URL;
 
-let poolPromise;
-
-// Patrón Singleton para reutilizar la conexión
-if (!global._sqlPoolPromise) {
-  global._sqlPoolPromise = new sql.ConnectionPool(config)
-    .connect()
-    .then(pool => {
-      console.log('Pool de SQL Server conectado globalmente');
-      return pool;
-    })
-    .catch(err => {
-      console.error('Error al conectar con SQL Server:', err);
-      global._sqlPoolPromise = null;
-      throw err;
-    });
+if (!connectionString) {
+  throw new Error("La variable de entorno DATABASE_URL no está definida.");
 }
 
-poolPromise = global._sqlPoolPromise;
+// Creamos el cliente de postgres
+const sql = postgres(connectionString, {
+  ssl: 'require' // Requerido para Neon
+});
 
-export async function getDBConnection() {
-  return poolPromise;
-}
-
-export { sql };
+export default sql;

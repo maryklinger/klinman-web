@@ -1,27 +1,18 @@
-import sql from "mssql";
+import sql from "@/lib/db"; // Tu nuevo conector a Neon
 
-// 1. FUNCIÓN DE DATOS (Se ejecuta en el servidor)
+// 1. FUNCIÓN DE DATOS
 async function getSolicitudes() {
-  const config = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    database: process.env.DB_DATABASE,
-    options: { encrypt: true, trustServerCertificate: false },
-  };
-
   try {
-    const pool = await sql.connect(config);
-    // Traemos todos los registros de la tabla solicitudes
-    const result = await pool.request().query("SELECT * FROM solicitudes ORDER BY fecha_creacion DESC");
-    return result.recordset;
+    // Cambiamos el query de MSSQL por la sintaxis de Postgres
+    const result = await sql`SELECT * FROM solicitudes ORDER BY fecha_creacion DESC`;
+    return result; 
   } catch (error) {
     console.error("Error en base de datos:", error);
     return [];
   }
 }
 
-// 2. COMPONENTE PRINCIPAL (Diseño exacto + Lógica Real)
+// 2. COMPONENTE PRINCIPAL (Mismo diseño y lógica original)
 export default async function ClientesPageServer() {
   const solicitudes = await getSolicitudes();
 
@@ -56,10 +47,10 @@ export default async function ClientesPageServer() {
 
   return (
     /* ======================================================================
-      ¡CAMBIO CLAVE AQUÍ! 
-      Agregamos 'font-sans antialiased' al contenedor principal para heredar 
-      la tipografía Geist configurada en tu RootLayout.
-      ====================================================================== 
+       ¡CAMBIO CLAVE AQUÍ! 
+       Agregamos 'font-sans antialiased' al contenedor principal para heredar 
+       la tipografía Geist configurada en tu RootLayout.
+       ====================================================================== 
     */
     <div className="p-8 md:p-12 space-y-10 bg-[#f8f5ef] min-h-screen font-sans antialiased">
       

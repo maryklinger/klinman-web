@@ -1,4 +1,4 @@
-import sql from "mssql";
+import sql from "@/lib/db"; // Tu conector a Neon
 import React from 'react';
 
 // Iconos SVG minimalistas (Font-weight fuerte para que combine)
@@ -6,21 +6,14 @@ const IconStar = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="non
 const IconUsers = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>;
 const IconChart = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>;
 
+// 1. FUNCIÓN DE DATOS PARA NEON
 async function getReportData() {
-  const config = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    database: process.env.DB_DATABASE,
-    options: { encrypt: true, trustServerCertificate: false },
-  };
-
   try {
-    const pool = await sql.connect(config);
-    const result = await pool.request().query("SELECT * FROM solicitudes");
-    return result.recordset;
+    // Sintaxis de la librería postgres (Neon)
+    const result = await sql`SELECT * FROM solicitudes`;
+    return result;
   } catch (error) {
-    console.error("Error en DB Reportes:", error);
+    console.error("Error en DB Reportes Neon:", error);
     return [];
   }
 }
@@ -30,6 +23,7 @@ export default async function ReportesPage() {
 
   // --- LÓGICA DE PRODUCTIVIDAD (POR TÉCNICO REAL) ---
   const conteoTecnicos = data.reduce((acc, sol) => {
+    // Nota: sol.nombre es el nombre del solicitante, si quieres agrupar por operador usa sol.operador_id
     const tecnico = (sol.nombre || "Sin Asignar").trim();
     acc[tecnico] = (acc[tecnico] || 0) + 1;
     return acc;
@@ -57,12 +51,9 @@ export default async function ReportesPage() {
   }));
 
   return (
-    /* ======================================================================
-       ¡CAMBIO AQUÍ! Añadimos 'font-sans antialiased' al contenedor de la página
-       ====================================================================== */
     <div className="p-8 md:p-12 space-y-12 bg-[#f8f5ef] min-h-screen font-sans antialiased">
       
-      {/* CABECERA - TITULO CORREGIDO ESTILO CARTERA */}
+      {/* CABECERA */}
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-[42px] font-black text-[#1f4d3a] tracking-[-0.05em] leading-none">
@@ -88,7 +79,6 @@ export default async function ReportesPage() {
         <div className="bg-white p-8 rounded-[2.5rem] border border-[#ece7dc] flex items-center justify-between shadow-sm group">
           <div>
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tickets Totales</p>
-            {/* font-mono para estructurar el número */}
             <h2 className="text-4xl font-black text-[#1f4d3a] tracking-tighter mt-1 font-mono">{data.length}</h2>
           </div>
           <div className="w-14 h-14 bg-[#f8f5ef] rounded-2xl flex items-center justify-center text-[#c8a96a] border border-[#ece7dc] group-hover:bg-[#1f4d3a] group-hover:text-white transition-colors">
@@ -99,7 +89,6 @@ export default async function ReportesPage() {
         <div className="bg-white p-8 rounded-[2.5rem] border border-[#ece7dc] flex items-center justify-between shadow-sm group">
           <div>
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Técnicos Activos</p>
-            {/* font-mono aplicado */}
             <h2 className="text-4xl font-black text-[#1f4d3a] tracking-tighter mt-1 font-mono">{Object.keys(conteoTecnicos).length}</h2>
           </div>
           <div className="w-14 h-14 bg-[#f8f5ef] rounded-2xl flex items-center justify-center text-[#c8a96a] border border-[#ece7dc] group-hover:bg-[#1f4d3a] group-hover:text-white transition-colors">
@@ -110,7 +99,6 @@ export default async function ReportesPage() {
         <div className="bg-white p-8 rounded-[2.5rem] border border-[#ece7dc] flex items-center justify-between shadow-sm group">
           <div>
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Performance</p>
-            {/* font-mono aplicado */}
             <h2 className="text-4xl font-black text-[#1f4d3a] tracking-tighter mt-1 font-mono">99%</h2>
           </div>
           <div className="w-14 h-14 bg-[#f8f5ef] rounded-2xl flex items-center justify-center text-[#c8a96a] border border-[#ece7dc] group-hover:bg-[#1f4d3a] group-hover:text-white transition-colors">
@@ -136,7 +124,6 @@ export default async function ReportesPage() {
               {rankingTecnicos.map((tech, i) => (
                 <tr key={i} className="group">
                   <td className="py-5 text-[13px] font-black text-[#1f4d3a] uppercase tracking-tight">{tech.name}</td>
-                  {/* font-mono para alinear la cantidad de la tabla */}
                   <td className="py-5 text-center font-black text-[#c8a96a] text-lg tracking-tighter font-mono">{tech.tickets}</td>
                   <td className="py-5 text-right">
                     <span className="text-[9px] font-black px-4 py-1.5 bg-[#f8f5ef] rounded-full text-[#1f4d3a] border border-[#ece7dc] uppercase tracking-widest">
@@ -157,7 +144,6 @@ export default async function ReportesPage() {
               <div key={index} className="space-y-3">
                 <div className="flex justify-between items-end text-[11px] font-black uppercase tracking-[0.1em]">
                   <span className="text-gray-500">{item.empresa}</span>
-                  {/* font-mono para que los porcentajes se mantengan estables y simétricos */}
                   <span className="text-lg text-[#1f4d3a] tracking-tighter leading-none font-mono">{item.rating}%</span>
                 </div>
                 <div className="h-3 w-full bg-[#f8f5ef] rounded-full overflow-hidden border border-[#ece7dc]">

@@ -1,13 +1,5 @@
 import { NextResponse } from 'next/server';
-import sql from 'mssql';
-
-const config = {
-  user: process.env.DB_USER || 'adminklinman',
-  password: process.env.DB_PASSWORD || 'K25250438-9',
-  server: process.env.DB_SERVER || 'klinman-server.database.windows.net',
-  database: process.env.DB_DATABASE || 'klinman-db',
-  options: { encrypt: true, trustServerCertificate: false },
-};
+import sql from '@/lib/db'; // Tu conector a Neon
 
 export async function GET(req) {
   try {
@@ -19,20 +11,19 @@ export async function GET(req) {
       return NextResponse.json({ success: false, error: 'Código de ticket requerido' }, { status: 400 });
     }
 
-    const pool = await sql.connect(config);
-    const result = await pool.request()
-      .input('ticket', sql.NVarChar, ticket.trim())
-      .query(`
-        SELECT codigo_ticket, nombre, servicio, estado, prioridad, fecha_creacion 
-        FROM solicitudes 
-        WHERE codigo_ticket = @ticket
-      `);
+    // Consulta a PostgreSQL
+    const result = await sql`
+      SELECT codigo_ticket, nombre, servicio, estado, prioridad, fecha_creacion 
+      FROM solicitudes 
+      WHERE codigo_ticket = ${ticket.trim()}
+    `;
 
-    if (result.recordset.length === 0) {
+    // Verificamos si existe el registro
+    if (result.length === 0) {
       return NextResponse.json({ success: false, error: 'No se encontró ningún ticket con ese código' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: result.recordset[0] });
+    return NextResponse.json({ success: true, data: result[0] });
 
   } catch (error) {
     console.error("Error en API de seguimiento:", error);

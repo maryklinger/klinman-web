@@ -1,48 +1,32 @@
-import sql from "mssql";
-
-const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
-
-  options: {
-    encrypt: true,
-    trustServerCertificate: false,
-  },
-};
+import sql from "@/lib/db"; // Tu conector centralizado a Neon
+import { NextResponse } from 'next/server';
 
 export async function GET() {
-
   try {
+    // Consulta directa a PostgreSQL
+    const result = await sql`
+      SELECT
+        id,
+        codigo_ticket AS ticket,
+        nombre,
+        empresa,
+        telefono,
+        email,
+        servicio,
+        mensaje,
+        estado,
+        fecha_creacion
+      FROM solicitudes
+      ORDER BY fecha_creacion DESC
+    `;
 
-    const pool = await sql.connect(config);
-
-    const result = await pool
-      .request()
-      .query(`
-        SELECT
-          id,
-          ticket,
-          nombre,
-          empresa,
-          telefono,
-          email,
-          servicio,
-          mensaje,
-          estado,
-          fecha_creacion
-        FROM solicitudes
-        ORDER BY fecha_creacion DESC
-      `);
-
-    return Response.json(result.recordset);
+    // Devolvemos el array de registros directamente
+    return NextResponse.json(result);
 
   } catch (error) {
-
-    console.error(error);
-
-    return Response.json(
+    console.error("Error al obtener solicitudes en Neon:", error);
+    
+    return NextResponse.json(
       {
         error: "Error al obtener solicitudes",
       },

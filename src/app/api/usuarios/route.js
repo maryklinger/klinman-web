@@ -1,20 +1,11 @@
-import sql from "mssql";
+import sql from "@/lib/db"; // Tu conector centralizado a Neon
 import { NextResponse } from 'next/server';
-
-const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
-  options: { encrypt: true, trustServerCertificate: true }
-};
 
 export async function GET() {
   try {
-    const pool = await sql.connect(config);
-    
     // Consulta unificada: Permisos de ROL + Permisos de USUARIO (UNION)
-    const result = await pool.request().query(`
+    // Nota: u.estado en Postgres es boolean, lo convertimos a 1/0 para tu formato
+    const result = await sql`
       SELECT u.id, u.nombre, u.email, u.rol_id, u.estado, p.clave_permiso
       FROM usuarios u
       LEFT JOIN rol_permisos rp ON u.rol_id = rp.rol_id
@@ -24,18 +15,19 @@ export async function GET() {
       FROM usuarios u
       LEFT JOIN usuario_permisos up ON u.id = up.usuario_id
       LEFT JOIN permisos p2 ON up.permiso_id = p2.id
-    `);
+    `;
 
     const usuariosMap = {};
-    result.recordset.forEach(row => {
+    
+    result.forEach(row => {
       if (!usuariosMap[row.id]) {
         usuariosMap[row.id] = {
           id: row.id,
           nombre: row.nombre,
           email: row.email,
           rol_id: row.rol_id,
-          estado: row.estado ? 1 : 0,
-          permisos: new Set() // Usamos Set para evitar duplicados
+          estado: row.estado ? 1 : 0, // Mantenemos tu formato de salida
+          permisos: new Set()
         };
       }
       if (row.clave_permiso) {
@@ -50,6 +42,7 @@ export async function GET() {
 
     return NextResponse.json(listaUsuarios);
   } catch (error) {
+    console.error("Error en API de usuarios:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

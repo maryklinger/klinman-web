@@ -1,4 +1,4 @@
-import sql from "mssql";
+import sql from "@/lib/db"; // Tu conector a Neon
 import Link from "next/link";
 import StatusBadge from "../../../../components/StatusBadge.jsx";
 import EstadoSelect from "../../../../components/EstadoSelect.jsx";
@@ -11,23 +11,13 @@ import {
 } from "@heroicons/react/24/outline";
 
 async function getSolicitud(id) {
-  const config = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    database: process.env.DB_DATABASE,
-    options: { encrypt: true, trustServerCertificate: false },
-  };
-
   try {
-    const pool = await sql.connect(config);
-    const result = await pool
-      .request()
-      .input("id", sql.Int, id)
-      .query("SELECT * FROM solicitudes WHERE id = @id");
-    return result.recordset[0];
+    // Sintaxis de la librería postgres (Neon)
+    // El ID se pasa como parámetro seguro dentro del template string
+    const result = await sql`SELECT * FROM solicitudes WHERE id = ${id}`;
+    return result[0] || null;
   } catch (error) {
-    console.error(error);
+    console.error("Error en DB al obtener solicitud:", error);
     return null;
   }
 }
@@ -43,7 +33,7 @@ export default async function SolicitudDetalle({ params }) {
   return (
     <div className="max-w-6xl mx-auto p-6 md:p-10">
       
-      {/* NAVEGACIÓN SUPERIOR (Tu estilo original) */}
+      {/* NAVEGACIÓN SUPERIOR */}
       <div className="flex justify-between items-center mb-8">
         <Link
           href="/admin/solicitudes"
@@ -57,7 +47,7 @@ export default async function SolicitudDetalle({ params }) {
         </button>
       </div>
 
-      {/* HEADER DE SOLICITUD (El bloque verde que te gustaba) */}
+      {/* HEADER DE SOLICITUD */}
       <div className="bg-[#1f4d3a] rounded-t-[2rem] p-8 md:p-10 text-white shadow-lg border-b border-[#c8a96a]/30">
         <div className="flex flex-col md:flex-row justify-between gap-6">
           <div>
@@ -76,7 +66,7 @@ export default async function SolicitudDetalle({ params }) {
         </div>
       </div>
 
-      {/* CUERPO DE LA VISTA (Tu Grid Original) */}
+      {/* CUERPO DE LA VISTA */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         
         <div className="lg:col-span-2 space-y-8">
@@ -109,7 +99,7 @@ export default async function SolicitudDetalle({ params }) {
           </div>
         </div>
 
-        {/* COLUMNA LATERAL (Minimalista) */}
+        {/* COLUMNA LATERAL */}
         <div className="space-y-8">
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#ece7dc]">
             <h3 className="text-[#1f4d3a] font-bold mb-4 flex items-center gap-2">

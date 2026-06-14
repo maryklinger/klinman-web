@@ -10,23 +10,21 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@next-auth/supabase-adapter": "^0.2.1",
+    "@supabase/supabase-js": "^2.108.1",
     "bcryptjs": "^3.0.3",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "lucide-react": "^1.14.0",
-    "mssql": "^12.5.2",
     "next": "16.2.3",
     "next-auth": "^4.24.14",
     "nodemailer": "^8.0.8",
+    "postgres": "^3.4.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hot-toast": "^2.6.0"
   },
-
-
-
-  
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/react": "19.2.14",

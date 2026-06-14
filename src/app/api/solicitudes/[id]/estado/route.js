@@ -1,48 +1,26 @@
-import sql from "mssql";
-
-const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
-
-  options: {
-    encrypt: true,
-    trustServerCertificate: false,
-  },
-};
+import sql from "@/lib/db"; // Tu conector a Neon
+import { NextResponse } from 'next/server';
 
 export async function PATCH(req, { params }) {
-
   try {
-
-    const { id } = params;
-
+    const { id } = await params;
     const body = await req.json();
-
     const { estado } = body;
 
-    const pool = await sql.connect(config);
+    // Actualización directa usando la sintaxis de la librería 'postgres'
+    await sql`
+      UPDATE solicitudes
+      SET estado = ${estado}
+      WHERE id = ${id}
+    `;
 
-    await pool
-      .request()
-      .input("id", sql.Int, id)
-      .input("estado", sql.VarChar, estado)
-      .query(`
-        UPDATE solicitudes
-        SET estado = @estado
-        WHERE id = @id
-      `);
-
-    return Response.json({
+    return NextResponse.json({
       success: true,
     });
 
   } catch (error) {
-
-    console.error(error);
-
-    return Response.json(
+    console.error("Error al actualizar estado en Neon:", error);
+    return NextResponse.json(
       {
         error: "Error al actualizar estado",
       },

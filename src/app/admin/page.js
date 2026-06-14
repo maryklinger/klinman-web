@@ -1,32 +1,20 @@
 // src/app/admin/page.js
 export const dynamic = "force-dynamic";
 
-import sql from "mssql";
-import DashboardAdmin from "./DashboardAdmin"; // Tu componente limpio
+import sql from "@/lib/db"; // Tu conector a Neon
+import DashboardAdmin from "./DashboardAdmin";
 
 async function getSolicitudes() {
-  const config = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    database: process.env.DB_DATABASE,
-    options: {
-      encrypt: true,
-      trustServerCertificate: true,
-    },
-  };
-
   try {
-    const pool = await sql.connect(config);
-    const result = await pool.request().query(`
-        SELECT id, ticket, nombre, empresa, servicio, estado, fecha_creacion 
-        FROM solicitudes 
-        ORDER BY fecha_creacion DESC
-    `);
-    await pool.close(); 
-    return result.recordset;
+    // Consulta directa usando la sintaxis de la librería postgres
+    const result = await sql`
+      SELECT id, nombre, empresa, servicio, estado, fecha_creacion 
+      FROM solicitudes 
+      ORDER BY fecha_creacion DESC
+    `;
+    return result;
   } catch (error) {
-    console.error("Error en getSolicitudes:", error);
+    console.error("Error en getSolicitudes (Neon):", error);
     return [];
   }
 }
@@ -45,7 +33,7 @@ export default async function AdminPage() {
             <p className="text-gray-600 mt-2">Gestión de solicitudes Klinman</p>
           </header>
 
-          {/* ÚNICO COMPONENTE: Aquí vive el Dashboard completo con sus tarjetas, alertas y distribución */}
+          {/* DASHBOARD */}
           <DashboardAdmin solicitudesIniciales={solicitudes} />
           
         </div>
