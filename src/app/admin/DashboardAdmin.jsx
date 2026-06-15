@@ -28,15 +28,11 @@ export default function DashboardAdmin({
 
   
   // 1. FILTRADO DE OPERADORES: USANDO LOGICA DE COMPARACIÓN SEGURA
-  const listaOperadores = usuariosIniciales.filter(u => {
-    // Si no existen los campos, devolvemos false inmediatamente
-    if (u.rol_id === undefined || u.estado === undefined) return false;
-    
-    // Convertimos a números para comparar
-    const esOperador = Number(u.rol_id) === 2;
-    const estaActivo = Number(u.estado) === 1;
-    
-    return esOperador && estaActivo;
+  const listaOperadores = usuariosIniciales.filter((u) => {
+  return (
+    Number(u.rol_id) === 3 &&
+    u.estado === true
+    );
   });
 
   // LOG DE CONTROL (Revisa la consola F12)
@@ -110,19 +106,21 @@ export default function DashboardAdmin({
       
       {/* MODAL DE ASIGNACIÓN — SIN CAMBIOS EN TU MAQUETA VISUAL */}
       {modalAsignar && ticketSeleccionado && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#1f4d3a]/80 backdrop-blur-md">
-          <div className="bg-white w-full max-w-xl rounded-[3.5rem] p-12 shadow-2xl border border-[#c8a96a]/20 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center mb-8">
+        <div className="fixed top-0 left-0  right-0 bottom-0  z-[99999] flex   items-center   justify-center bg-[#1f4d3a]/70 backdrop-blur-md">
+          {/* Ajuste: max-h-[90vh] asegura que no tape todo, y rounded-[2rem] para un look más moderno */}
+          <div className="bg-white w-full max-w-lg max-h-[90vh] flex flex-col rounded-[2rem] p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            
+            {/* Header del Modal */}
+            <div className="flex justify-between items-center mb-6">
               <div>
-                <p className="text-[10px] font-bold text-[#c8a96a] tracking-[0.2em] uppercase">Derivación de Casos</p>
-                <h2 className="text-3xl font-bold tracking-tight mt-0.5">Asignar Operador</h2>
+                <p className="text-[9px] font-bold text-[#c8a96a] tracking-[0.2em] uppercase">Derivación</p>
+                <h2 className="text-2xl font-bold text-[#1f4d3a]">Asignar Operador</h2>
               </div>
               <button 
-                type="button" 
                 onClick={() => { setModalAsignar(false); setTicketSeleccionado(null); }} 
-                className="p-2 text-slate-400 hover:text-red-500 transition-colors rounded-full bg-slate-50"
+                className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors"
               >
-                <XMarkIcon className="w-6 h-6" />
+                <XMarkIcon className="w-5 h-5" />
               </button>
             </div>
 
